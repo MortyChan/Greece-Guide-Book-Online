@@ -18,20 +18,19 @@
     const frame = document.getElementById('guideFrame');
     const teamHeaderHtml = `
       <section class="qztx-team-header" aria-label="支队信息">
-        <img src="assets/team-logo.svg" alt="千载同希支队 logo" loading="eager">
-        <div>
-          <p>日新书院</p>
-          <h1>“千载同希”赴希腊调研古典文明现代转化实践支队</h1>
+        <div class="qztx-team-inner">
+          <img src="assets/team-logo.svg" alt="千载同希支队 logo" loading="eager">
+          <h1>日新书院“千载同希”赴希腊调研古典文明现代转化实践支队</h1>
         </div>
       </section>
     `;
     const fixCss = `
       .global-nav,.promo-ribbon{display:none!important}
-      .shell{padding-top:16px!important;padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
-      .qztx-team-header{display:flex!important;align-items:center!important;gap:18px!important;margin:0 0 18px!important;padding:18px 20px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:30px!important;background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.58)),radial-gradient(circle at 12% 0,rgba(25,125,164,.14),rgba(25,125,164,0) 38%)!important;box-shadow:0 18px 48px rgba(18,23,34,.1),inset 0 1px 0 rgba(255,255,255,.92)!important;backdrop-filter:blur(22px) saturate(180%)!important;-webkit-backdrop-filter:blur(22px) saturate(180%)!important;color:#1d1d1f!important}
-      .qztx-team-header img{width:86px!important;height:86px!important;flex:0 0 auto!important;border-radius:22px!important;object-fit:contain!important;background:#fff!important;box-shadow:0 14px 34px rgba(23,104,178,.14)!important}
-      .qztx-team-header p{margin:0 0 6px!important;color:#1768b2!important;font-size:.86rem!important;font-weight:900!important;letter-spacing:0!important}
-      .qztx-team-header h1{margin:0!important;max-width:860px!important;color:#1d1d1f!important;font-size:clamp(1.15rem,3.6vw,2.15rem)!important;line-height:1.18!important;letter-spacing:0!important;font-weight:900!important;text-wrap:balance!important}
+      .shell{padding-top:0!important;padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
+      .qztx-team-header{position:sticky!important;top:0!important;z-index:36!important;width:100vw!important;margin:0 0 20px calc(50% - 50vw)!important;min-height:44px!important;border-bottom:1px solid rgba(0,0,0,.08)!important;background:rgba(245,245,247,.86)!important;backdrop-filter:saturate(180%) blur(20px)!important;-webkit-backdrop-filter:saturate(180%) blur(20px)!important;color:#1d1d1f!important}
+      .qztx-team-inner{width:min(1024px,calc(100% - 32px))!important;min-height:44px!important;margin:0 auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:18px!important;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Noto Sans SC","Microsoft YaHei",Arial,sans-serif!important}
+      .qztx-team-header img{width:24px!important;height:24px!important;flex:0 0 24px!important;border-radius:6px!important;object-fit:contain!important;background:transparent!important;box-shadow:none!important}
+      .qztx-team-header h1{margin:0!important;min-width:0!important;color:rgba(29,29,31,.9)!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;font-weight:600!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
       .nav{position:fixed!important;left:50%!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:20!important;width:min(520px,calc(100% - 28px))!important;transform:translateX(-50%)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:7px!important;padding:8px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.46)),radial-gradient(circle at 18% 12%,rgba(255,255,255,.96),rgba(255,255,255,0) 34%),radial-gradient(circle at 82% 88%,rgba(25,125,164,.18),rgba(25,125,164,0) 42%)!important;box-shadow:0 24px 70px rgba(18,23,34,.18),inset 0 1px 0 rgba(255,255,255,.92),inset 0 -18px 34px rgba(255,255,255,.22)!important;backdrop-filter:blur(28px) saturate(210%)!important;-webkit-backdrop-filter:blur(28px) saturate(210%)!important;overflow:hidden!important}
       .nav::before{content:""!important;position:absolute!important;inset:1px 16px auto!important;height:1px!important;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent)!important;pointer-events:none!important}
       .nav::after{content:""!important;position:absolute!important;inset:0!important;border-radius:inherit!important;background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%,rgba(255,255,255,.2))!important;pointer-events:none!important}
@@ -41,7 +40,7 @@
       .nav a.is-active{color:#fff!important;background:linear-gradient(135deg,rgba(123,35,80,.94),rgba(25,125,164,.92))!important;box-shadow:0 12px 30px rgba(25,125,164,.26),inset 0 1px 0 rgba(255,255,255,.42)!important;transform:translateY(-1px)!important}
       .search-fab{width:58px!important;height:58px!important;right:max(18px,env(safe-area-inset-right))!important;bottom:calc(94px + env(safe-area-inset-bottom))!important}
       .search-panel{inset:auto max(18px,env(safe-area-inset-right)) calc(164px + env(safe-area-inset-bottom)) auto!important}
-      @media (max-width:430px){.shell{padding-top:10px!important}.qztx-team-header{gap:12px!important;padding:14px!important;border-radius:24px!important}.qztx-team-header img{width:68px!important;height:68px!important;border-radius:18px!important}.qztx-team-header p{font-size:.78rem!important}.qztx-team-header h1{font-size:1.08rem!important;line-height:1.22!important}.nav{width:calc(100% - 26px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;padding:7px!important;gap:5px!important}.nav a{min-height:48px!important;font-size:.8rem!important;padding:0 4px!important}.search-fab{width:54px!important;height:54px!important;right:max(16px,env(safe-area-inset-right))!important;bottom:calc(92px + env(safe-area-inset-bottom))!important}.search-panel{inset:auto 10px calc(154px + env(safe-area-inset-bottom)) 10px!important;width:auto!important}}
+      @media (max-width:430px){.qztx-team-header{min-height:48px!important;margin-bottom:14px!important}.qztx-team-inner{width:calc(100% - 22px)!important;min-height:48px!important;justify-content:flex-start!important;gap:10px!important}.qztx-team-header img{width:22px!important;height:22px!important;flex-basis:22px!important;border-radius:5px!important}.qztx-team-header h1{font-size:12.5px!important;text-align:left!important;line-height:1.25!important}.nav{width:calc(100% - 26px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;padding:7px!important;gap:5px!important}.nav a{min-height:48px!important;font-size:.8rem!important;padding:0 4px!important}.search-fab{width:54px!important;height:54px!important;right:max(16px,env(safe-area-inset-right))!important;bottom:calc(92px + env(safe-area-inset-bottom))!important}.search-panel{inset:auto 10px calc(154px + env(safe-area-inset-bottom)) 10px!important;width:auto!important}}
     `;
     frame.addEventListener('load', () => {
       try {
