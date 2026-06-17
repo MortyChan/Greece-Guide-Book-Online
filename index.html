@@ -40,8 +40,65 @@
       .nav a.is-active{color:#fff!important;background:linear-gradient(135deg,rgba(123,35,80,.94),rgba(25,125,164,.92))!important;box-shadow:0 12px 30px rgba(25,125,164,.26),inset 0 1px 0 rgba(255,255,255,.42)!important;transform:translateY(-1px)!important}
       .search-fab{width:58px!important;height:58px!important;right:max(18px,env(safe-area-inset-right))!important;bottom:calc(94px + env(safe-area-inset-bottom))!important}
       .search-panel{inset:auto max(18px,env(safe-area-inset-right)) calc(164px + env(safe-area-inset-bottom)) auto!important}
+      #searchResults .info-card{cursor:pointer!important;position:relative!important;transition:transform 180ms var(--ease),box-shadow 180ms ease!important}
+      #searchResults .info-card:hover{transform:translateY(-2px)!important;box-shadow:0 14px 30px rgba(0,0,0,.08)!important}
+      #searchResults .info-card::after{content:"前往"!important;position:absolute!important;right:14px!important;top:14px!important;color:#06c!important;font-size:.78rem!important;font-weight:900!important}
       @media (max-width:430px){.qztx-team-header{min-height:48px!important;margin-bottom:14px!important}.qztx-team-inner{width:calc(100% - 22px)!important;min-height:48px!important;justify-content:flex-start!important;gap:10px!important}.qztx-team-header img{width:22px!important;height:22px!important;flex-basis:22px!important;border-radius:5px!important}.qztx-team-header h1{font-size:12.5px!important;text-align:left!important;line-height:1.25!important}.nav{width:calc(100% - 26px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;padding:7px!important;gap:5px!important}.nav a{min-height:48px!important;font-size:.8rem!important;padding:0 4px!important}.search-fab{width:54px!important;height:54px!important;right:max(16px,env(safe-area-inset-right))!important;bottom:calc(92px + env(safe-area-inset-bottom))!important}.search-panel{inset:auto 10px calc(154px + env(safe-area-inset-bottom)) 10px!important;width:auto!important}}
     `;
+    function wireSearchJump(doc) {
+      const win = doc.defaultView;
+      const results = doc.querySelector('#searchResults');
+      if (!results || results.dataset.jumpReady === 'true') return;
+      results.dataset.jumpReady = 'true';
+      const sectionForType = { '行程': '#schedule', '常用语': '#prepare', '物资': '#prepare', '通讯录': '#prepare', '安全电话': '#safety', '调研': '#research' };
+      const closePanel = () => {
+        const panel = doc.querySelector('#searchPanel');
+        panel?.classList.remove('is-open');
+        panel?.setAttribute('aria-hidden', 'true');
+      };
+      const decorate = () => {
+        results.querySelectorAll('.info-card').forEach(card => {
+          if (card.dataset.jumpBound === 'true') return;
+          const type = card.querySelector('.tag')?.textContent.trim() || '';
+          const title = card.querySelector('h3')?.textContent.trim() || '';
+          if (!sectionForType[type]) return;
+          card.dataset.jumpBound = 'true';
+          card.setAttribute('role', 'button');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-label', `前往${type}：${title}`);
+          const jump = () => {
+            if (type === '行程') {
+              const tab = [...doc.querySelectorAll('#dayTabs .tab-button')].find(button => title.includes(button.textContent.trim()));
+              tab?.click();
+            }
+            if (type === '调研') {
+              [...doc.querySelectorAll('#research details')].forEach(detail => {
+                const summary = detail.querySelector('summary')?.textContent || '';
+                if (summary.includes(title)) detail.open = true;
+              });
+            }
+            const target = doc.querySelector(sectionForType[type]);
+            closePanel();
+            setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+          };
+          card.addEventListener('click', jump);
+          card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              jump();
+            }
+          });
+        });
+      };
+      new win.MutationObserver(decorate).observe(results, { childList: true, subtree: true });
+      const searchButton = doc.querySelector('#searchButton');
+      const searchInput = doc.querySelector('#searchInput');
+      searchButton?.addEventListener('click', () => setTimeout(decorate, 30));
+      searchInput?.addEventListener('keydown', event => {
+        if (event.key === 'Enter') setTimeout(decorate, 30);
+      });
+      decorate();
+    }
     frame.addEventListener('load', () => {
       try {
         const doc = frame.contentDocument;
@@ -53,6 +110,7 @@
         if (main && !doc.querySelector('.qztx-team-header')) {
           main.insertAdjacentHTML('afterbegin', teamHeaderHtml);
         }
+        wireSearchJump(doc);
       } catch (error) {
         window.location.replace('github-upload-full/index.html');
       }
