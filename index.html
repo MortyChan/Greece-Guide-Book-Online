@@ -2,17 +2,45 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=github-upload-full/index.html">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>千载同希随行导览</title>
   <style>
-    html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans SC","Microsoft YaHei",sans-serif;background:#f5f5f7;color:#1d1d1f}body{display:grid;place-items:center}.card{width:min(520px,calc(100% - 32px));padding:28px;border-radius:28px;background:rgba(255,255,255,.82);box-shadow:0 20px 60px rgba(0,0,0,.12);text-align:center}a{color:#06c;font-weight:700;text-decoration:none}h1{margin:0 0 10px;font-size:28px}p{margin:0;color:#6e6e73;line-height:1.7}
+    html,body{width:100%;height:100%;margin:0;background:#f5f5f7;overflow:hidden}
+    iframe{display:block;width:100%;height:100dvh;border:0;background:#f5f5f7}
+    .fallback{position:fixed;inset:auto 16px 16px;z-index:2;padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.84);backdrop-filter:blur(20px);box-shadow:0 12px 34px rgba(0,0,0,.14);font:13px -apple-system,BlinkMacSystemFont,"Noto Sans SC","Microsoft YaHei",sans-serif;text-align:center}
+    .fallback a{color:#06c;font-weight:700;text-decoration:none}
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>千载同希随行导览</h1>
-    <p>正在进入线上手册。如果没有自动跳转，请点击<br><a href="github-upload-full/index.html">进入导览</a></p>
-  </main>
+  <iframe id="guideFrame" src="github-upload-full/index.html" title="千载同希随行导览"></iframe>
+  <noscript><p class="fallback"><a href="github-upload-full/index.html">进入导览</a></p></noscript>
+  <script>
+    const frame = document.getElementById('guideFrame');
+    const fixCss = `
+      .global-nav,.promo-ribbon{display:none!important}
+      .shell{padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
+      .nav{position:fixed!important;left:50%!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:20!important;width:min(520px,calc(100% - 28px))!important;transform:translateX(-50%)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:7px!important;padding:8px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.46)),radial-gradient(circle at 18% 12%,rgba(255,255,255,.96),rgba(255,255,255,0) 34%),radial-gradient(circle at 82% 88%,rgba(25,125,164,.18),rgba(25,125,164,0) 42%)!important;box-shadow:0 24px 70px rgba(18,23,34,.18),inset 0 1px 0 rgba(255,255,255,.92),inset 0 -18px 34px rgba(255,255,255,.22)!important;backdrop-filter:blur(28px) saturate(210%)!important;-webkit-backdrop-filter:blur(28px) saturate(210%)!important;overflow:hidden!important}
+      .nav::before{content:""!important;position:absolute!important;inset:1px 16px auto!important;height:1px!important;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent)!important;pointer-events:none!important}
+      .nav::after{content:""!important;position:absolute!important;inset:0!important;border-radius:inherit!important;background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%,rgba(255,255,255,.2))!important;pointer-events:none!important}
+      .nav a{position:relative!important;z-index:1!important;flex:1 1 0!important;min-height:50px!important;color:rgba(18,23,34,.68)!important;font-size:.86rem!important;border-radius:999px!important;transition:color 220ms var(--ease),background 220ms var(--ease),transform 220ms var(--ease),box-shadow 220ms ease!important}
+      .nav a::before{content:""!important;position:absolute!important;inset:7px 10px!important;border-radius:inherit!important;background:rgba(255,255,255,.42)!important;opacity:0!important;transform:scale(.92)!important;transition:opacity 220ms var(--ease),transform 220ms var(--ease)!important}
+      .nav a:hover::before,.nav a.is-active::before{opacity:1!important;transform:scale(1)!important}
+      .nav a.is-active{color:#fff!important;background:linear-gradient(135deg,rgba(123,35,80,.94),rgba(25,125,164,.92))!important;box-shadow:0 12px 30px rgba(25,125,164,.26),inset 0 1px 0 rgba(255,255,255,.42)!important;transform:translateY(-1px)!important}
+      .search-fab{width:58px!important;height:58px!important;right:max(18px,env(safe-area-inset-right))!important;bottom:calc(94px + env(safe-area-inset-bottom))!important}
+      .search-panel{inset:auto max(18px,env(safe-area-inset-right)) calc(164px + env(safe-area-inset-bottom)) auto!important}
+      @media (max-width:430px){.nav{width:calc(100% - 26px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;padding:7px!important;gap:5px!important}.nav a{min-height:48px!important;font-size:.8rem!important;padding:0 4px!important}.search-fab{width:54px!important;height:54px!important;right:max(16px,env(safe-area-inset-right))!important;bottom:calc(92px + env(safe-area-inset-bottom))!important}.search-panel{inset:auto 10px calc(154px + env(safe-area-inset-bottom)) 10px!important;width:auto!important}}
+    `;
+    frame.addEventListener('load', () => {
+      try {
+        const doc = frame.contentDocument;
+        const style = doc.createElement('style');
+        style.setAttribute('data-mobile-polish','true');
+        style.textContent = fixCss;
+        doc.head.appendChild(style);
+      } catch (error) {
+        window.location.replace('github-upload-full/index.html');
+      }
+    });
+  </script>
 </body>
 </html>
