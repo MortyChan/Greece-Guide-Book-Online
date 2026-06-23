@@ -3,118 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f7">
   <title>千载同希随行导览</title>
-  <style>
-    html,body{width:100%;height:100%;margin:0;background:#f5f5f7;overflow:hidden}
-    iframe{display:block;width:100%;height:100dvh;border:0;background:#f5f5f7}
-    .fallback{position:fixed;inset:auto 16px 16px;z-index:2;padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.84);backdrop-filter:blur(20px);box-shadow:0 12px 34px rgba(0,0,0,.14);font:13px -apple-system,BlinkMacSystemFont,"Noto Sans SC","Microsoft YaHei",sans-serif;text-align:center}
-    .fallback a{color:#06c;font-weight:700;text-decoration:none}
-  </style>
+  <link rel="stylesheet" href="assets/styles-v2.css">
 </head>
 <body>
-  <iframe id="guideFrame" src="github-upload-full/index.html" title="千载同希随行导览"></iframe>
-  <noscript><p class="fallback"><a href="github-upload-full/index.html">进入导览</a></p></noscript>
-  <script>
-    const frame = document.getElementById('guideFrame');
-    const teamHeaderHtml = `
-      <section class="qztx-team-header" aria-label="支队信息">
-        <div class="qztx-team-inner">
-          <img src="assets/team-logo.svg" alt="千载同希支队 logo" loading="eager">
-          <h1>日新书院“千载同希”赴希腊调研古典文明现代转化实践支队</h1>
-        </div>
-      </section>
-    `;
-    const fixCss = `
-      .global-nav,.promo-ribbon{display:none!important}
-      .shell{padding-top:0!important;padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}
-      .qztx-team-header{position:sticky!important;top:0!important;z-index:36!important;width:100vw!important;margin:0 0 20px calc(50% - 50vw)!important;min-height:44px!important;border-bottom:1px solid rgba(0,0,0,.08)!important;background:rgba(245,245,247,.86)!important;backdrop-filter:saturate(180%) blur(20px)!important;-webkit-backdrop-filter:saturate(180%) blur(20px)!important;color:#1d1d1f!important}
-      .qztx-team-inner{width:min(1024px,calc(100% - 32px))!important;min-height:44px!important;margin:0 auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:18px!important;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Noto Sans SC","Microsoft YaHei",Arial,sans-serif!important}
-      .qztx-team-header img{width:24px!important;height:24px!important;flex:0 0 24px!important;border-radius:6px!important;object-fit:contain!important;background:transparent!important;box-shadow:none!important}
-      .qztx-team-header h1{margin:0!important;min-width:0!important;color:rgba(29,29,31,.9)!important;font-size:14px!important;line-height:1.2!important;letter-spacing:0!important;font-weight:600!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important}
-      .nav{position:fixed!important;left:50%!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:20!important;width:min(520px,calc(100% - 28px))!important;transform:translateX(-50%)!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:7px!important;padding:8px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,255,255,.46)),radial-gradient(circle at 18% 12%,rgba(255,255,255,.96),rgba(255,255,255,0) 34%),radial-gradient(circle at 82% 88%,rgba(25,125,164,.18),rgba(25,125,164,0) 42%)!important;box-shadow:0 24px 70px rgba(18,23,34,.18),inset 0 1px 0 rgba(255,255,255,.92),inset 0 -18px 34px rgba(255,255,255,.22)!important;backdrop-filter:blur(28px) saturate(210%)!important;-webkit-backdrop-filter:blur(28px) saturate(210%)!important;overflow:hidden!important}
-      .nav::before{content:""!important;position:absolute!important;inset:1px 16px auto!important;height:1px!important;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent)!important;pointer-events:none!important}
-      .nav::after{content:""!important;position:absolute!important;inset:0!important;border-radius:inherit!important;background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%,rgba(255,255,255,.2))!important;pointer-events:none!important}
-      .nav a{position:relative!important;z-index:1!important;flex:1 1 0!important;min-height:50px!important;color:rgba(18,23,34,.68)!important;font-size:.86rem!important;border-radius:999px!important;transition:color 220ms var(--ease),background 220ms var(--ease),transform 220ms var(--ease),box-shadow 220ms ease!important}
-      .nav a::before{content:""!important;position:absolute!important;inset:7px 10px!important;border-radius:inherit!important;background:rgba(255,255,255,.42)!important;opacity:0!important;transform:scale(.92)!important;transition:opacity 220ms var(--ease),transform 220ms var(--ease)!important}
-      .nav a:hover::before,.nav a.is-active::before{opacity:1!important;transform:scale(1)!important}
-      .nav a.is-active{color:#fff!important;background:linear-gradient(135deg,rgba(123,35,80,.94),rgba(25,125,164,.92))!important;box-shadow:0 12px 30px rgba(25,125,164,.26),inset 0 1px 0 rgba(255,255,255,.42)!important;transform:translateY(-1px)!important}
-      .search-fab{width:58px!important;height:58px!important;right:max(18px,env(safe-area-inset-right))!important;bottom:calc(94px + env(safe-area-inset-bottom))!important}
-      .search-panel{inset:auto max(18px,env(safe-area-inset-right)) calc(164px + env(safe-area-inset-bottom)) auto!important}
-      #searchResults .info-card{cursor:pointer!important;position:relative!important;transition:transform 180ms var(--ease),box-shadow 180ms ease!important}
-      #searchResults .info-card:hover{transform:translateY(-2px)!important;box-shadow:0 14px 30px rgba(0,0,0,.08)!important}
-      #searchResults .info-card::after{content:"前往"!important;position:absolute!important;right:14px!important;top:14px!important;color:#06c!important;font-size:.78rem!important;font-weight:900!important}
-      @media (max-width:430px){.qztx-team-header{min-height:48px!important;margin-bottom:14px!important}.qztx-team-inner{width:calc(100% - 22px)!important;min-height:48px!important;justify-content:flex-start!important;gap:10px!important}.qztx-team-header img{width:22px!important;height:22px!important;flex-basis:22px!important;border-radius:5px!important}.qztx-team-header h1{font-size:12.5px!important;text-align:left!important;line-height:1.25!important}.nav{width:calc(100% - 26px)!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;padding:7px!important;gap:5px!important}.nav a{min-height:48px!important;font-size:.8rem!important;padding:0 4px!important}.search-fab{width:54px!important;height:54px!important;right:max(16px,env(safe-area-inset-right))!important;bottom:calc(92px + env(safe-area-inset-bottom))!important}.search-panel{inset:auto 10px calc(154px + env(safe-area-inset-bottom)) 10px!important;width:auto!important}}
-    `;
-    function wireSearchJump(doc) {
-      const win = doc.defaultView;
-      const results = doc.querySelector('#searchResults');
-      if (!results || results.dataset.jumpReady === 'true') return;
-      results.dataset.jumpReady = 'true';
-      const sectionForType = { '行程': '#schedule', '常用语': '#prepare', '物资': '#prepare', '通讯录': '#prepare', '安全电话': '#safety', '调研': '#research' };
-      const closePanel = () => {
-        const panel = doc.querySelector('#searchPanel');
-        panel?.classList.remove('is-open');
-        panel?.setAttribute('aria-hidden', 'true');
-      };
-      const decorate = () => {
-        results.querySelectorAll('.info-card').forEach(card => {
-          if (card.dataset.jumpBound === 'true') return;
-          const type = card.querySelector('.tag')?.textContent.trim() || '';
-          const title = card.querySelector('h3')?.textContent.trim() || '';
-          if (!sectionForType[type]) return;
-          card.dataset.jumpBound = 'true';
-          card.setAttribute('role', 'button');
-          card.setAttribute('tabindex', '0');
-          card.setAttribute('aria-label', `前往${type}：${title}`);
-          const jump = () => {
-            if (type === '行程') {
-              const tab = [...doc.querySelectorAll('#dayTabs .tab-button')].find(button => title.includes(button.textContent.trim()));
-              tab?.click();
-            }
-            if (type === '调研') {
-              [...doc.querySelectorAll('#research details')].forEach(detail => {
-                const summary = detail.querySelector('summary')?.textContent || '';
-                if (summary.includes(title)) detail.open = true;
-              });
-            }
-            const target = doc.querySelector(sectionForType[type]);
-            closePanel();
-            setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
-          };
-          card.addEventListener('click', jump);
-          card.addEventListener('keydown', event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              jump();
-            }
-          });
-        });
-      };
-      new win.MutationObserver(decorate).observe(results, { childList: true, subtree: true });
-      const searchButton = doc.querySelector('#searchButton');
-      const searchInput = doc.querySelector('#searchInput');
-      searchButton?.addEventListener('click', () => setTimeout(decorate, 30));
-      searchInput?.addEventListener('keydown', event => {
-        if (event.key === 'Enter') setTimeout(decorate, 30);
-      });
-      decorate();
-    }
-    frame.addEventListener('load', () => {
-      try {
-        const doc = frame.contentDocument;
-        const style = doc.createElement('style');
-        style.setAttribute('data-mobile-polish','true');
-        style.textContent = fixCss;
-        doc.head.appendChild(style);
-        const main = doc.querySelector('main.shell');
-        if (main && !doc.querySelector('.qztx-team-header')) {
-          main.insertAdjacentHTML('afterbegin', teamHeaderHtml);
-        }
-        wireSearchJump(doc);
-      } catch (error) {
-        window.location.replace('github-upload-full/index.html');
-      }
-    });
-  </script>
+  <a class="skip-link" href="#schedule">跳到主要内容</a>
+  <header class="topbar"><div class="topbar-inner">
+    <img src="assets/team-logo.svg" alt="千载同希支队 logo">
+    <strong>日新书院“千载同希”赴希腊调研古典文明现代转化实践支队</strong>
+  </div></header>
+  <main>
+    <section class="hero" id="top" aria-labelledby="hero-title"><div class="hero-inner">
+      <p class="eyebrow">Qian Zai Tong Xi · Greece Guide</p><h1 id="hero-title">随行导览。</h1>
+      <p class="hero-copy">把行程、住宿、物资、安全与调研资料装进手机。新增希腊内容已按 6 月 23 日实践手册整理。</p>
+      <div class="hero-meta"><span class="chip">2025.07.13-07.23</span><span class="chip">雅典 · 伊拉克利翁</span><span class="chip">手机优先</span><span class="chip">紧急联系人已加锁</span></div>
+    </div></section>
+    <section class="status-band" aria-label="导览摘要"><div class="status-grid">
+      <div class="status-item"><span>出行时间</span><strong>2025.07.13-07.23</strong></div><div class="status-item"><span>希腊城市</span><strong>雅典 / 伊拉克利翁</strong></div>
+      <div class="status-item"><span>住宿</span><strong>President / Castello</strong></div><div class="status-item"><span>公开急救</span><strong>112 · 100 · 166</strong></div>
+    </div></section>
+    <section class="band gray" id="schedule"><div class="section-inner reveal">
+      <div class="section-head"><div><p class="eyebrow">Schedule</p><h2>每日行程</h2></div><p>手册行程表仍保留维也纳、布拉格旧模板。北京至雅典出行段照录，其余日期明确标注“待更新”。</p></div>
+      <div class="tabs" id="dayTabs" aria-label="按日期切换行程"></div><div class="schedule-layout"><article class="day-summary" id="dayCard"></article><div class="timeline" id="timeline"></div></div>
+    </div></section>
+    <section class="band white" id="prepare"><div class="section-inner reveal">
+      <div class="section-head"><div><p class="eyebrow">Before Departure</p><h2>行前准备</h2></div><p>希腊语、住宿和物资整理均来自新版手册。清单勾选会保存在当前浏览器中。</p></div>
+      <h3 class="subhead">住宿信息</h3><div class="grid-2" id="hotels">
+        <article class="hotel" id="hotel-athens"><div class="hotel-media"><img src="assets/manual-2026/president-hotel.png" alt="雅典总统酒店 President Hotel" loading="lazy"></div><div class="hotel-body"><p class="eyebrow">Athens</p><h3>总统酒店 President Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. Kifisias 43, Athina</p><p>电话：+0030-21-06989000<br>入住 2025.07.14，退房 2025.07.18，共 4 晚。</p></div></article>
+        <article class="hotel" id="hotel-heraklion"><div class="hotel-media"><img src="assets/manual-2026/castello-city-hotel.png" alt="伊拉克利翁城市城堡酒店 Castello City Hotel" loading="lazy"></div><div class="hotel-body"><p class="eyebrow">Heraklion</p><h3>城市城堡酒店 Castello City Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. 62 Martiron 1</p><p>电话：+0030-281-0251212<br>入住 2025.07.19，退房 2025.07.22，共 3 晚。</p></div></article>
+      </div>
+      <h3 class="subhead">常用希腊语</h3><div class="phrase-grid" id="phrases"></div>
+      <details open id="support-details"><summary>支队物资 <span class="tag gold">4 项</span></summary><div class="details-body"><div class="check-grid" id="supportPacking"></div></div></details>
+      <details id="packing-details"><summary>个人物资 <span class="tag blue">27 项</span></summary><div class="details-body"><div class="check-grid" id="personalPacking"></div><p class="note">不可携带肉制品、乳制品、蛋类、新鲜水果或蔬菜等入境。现金、电源类不可托运，只能随身携带。</p></div></details>
+      <details id="contacts-details"><summary>支队成员名单 <span class="tag muted">联系方式已加锁</span></summary><div class="details-body"><div class="table-wrap"><table><thead><tr><th>姓名</th><th>性别</th><th>简介</th><th>职务</th></tr></thead><tbody id="contactsTable"></tbody></table></div></div></details>
+    </div></section>
+    <section class="band gray" id="safety"><div class="section-inner reveal">
+      <div class="section-head"><div><p class="eyebrow">Safety</p><h2>注意事项</h2></div><p>新增内容覆盖雅典与伊拉克利翁交通、天气、习俗安全、公开急救电话和紧急处理流程。</p></div>
+      <h3 class="subhead">公共交通</h3><div class="segment" role="tablist" aria-label="选择城市交通"><button class="segment-button is-active" type="button" data-city="athens" role="tab" aria-selected="true">雅典</button><button class="segment-button" type="button" data-city="heraklion" role="tab" aria-selected="false">伊拉克利翁</button></div><div class="transport-panel" id="transportPanel"></div>
+      <h3 class="subhead">当地天气</h3><div class="weather-grid" id="weather">
+        <figure class="weather-item"><img src="assets/manual-2026/athens-weather.png" alt="手册中的雅典天气信息" loading="lazy"><figcaption><strong>雅典</strong>7 月炎热干燥，日照强，户外参访注意补水与防晒。</figcaption></figure>
+        <figure class="weather-item"><img src="assets/manual-2026/heraklion-weather.png" alt="手册中的伊拉克利翁天气信息" loading="lazy"><figcaption><strong>伊拉克利翁</strong>克里特岛海风明显，但白天紫外线仍强，遗址参观需穿舒适鞋。</figcaption></figure>
+      </div>
+      <h3 class="subhead">习俗与安全</h3><div id="safetyGroups"></div><h3 class="subhead">公开紧急电话</h3><div class="phone-grid" id="publicPhones"></div>
+      <details id="emergency-process"><summary>紧急情况处理 <span class="tag red">先确保人身安全</span></summary><div class="details-body"><p><strong>护照丢失：</strong>先向警察局报案，再到大使馆申请补发。提前准备证件照、护照签发机关、日期、号码及护照复印件。</p><p><strong>财物与行李：</strong>现金、相机、首饰、手表等贵重物品随身携带；离开游览车、酒店或餐厅时再次确认。</p><p><strong>托运行李：</strong>办妥托运后保管好行李标签。行李未到时凭标签到机场行李挂失处登记；相机、现金等贵重物品不要托运。</p></div></details>
+      <section class="locked" id="locked-contacts" aria-labelledby="locked-title"><h3 id="locked-title"><img class="icon" src="assets/icons/lock-keyhole.svg" alt="">成员与紧急联系人电话</h3><p>成员手机号及亲属紧急联系方式默认锁定，并以加密形式保存；不会进入页面正文或搜索索引。</p><div class="password-row"><label for="emergencyPassword" class="sr-only">成员与紧急联系人密码</label><input id="emergencyPassword" type="password" autocomplete="off" placeholder="输入密码"><button class="button" id="unlockEmergency" type="button">显示</button><button class="button secondary" id="lockEmergency" type="button">锁定</button></div><p class="error" id="emergencyStatus" aria-live="polite"></p><div id="emergencyContent" hidden></div></section>
+    </div></section>
+    <section class="band white" id="research"><div class="section-inner reveal">
+      <div class="section-head"><div><p class="eyebrow">Research</p><h2>调研资料</h2></div><p>第四部分仍为维也纳、布拉格旧模板。按原有日期、地点与采访提纲结构留位，等待后续替换。</p></div>
+      <details open><summary>总体介绍</summary><div class="details-body"><p>支队聚焦“一带一路”视域下中希文明互鉴，关注古典文明的当代样态与创新发展路径，通过实地调研、青年对话与文化交流，探索古典文明如何融入现代社会、实现创造性转化与创新性发展。</p></div></details><div class="research-list" id="researchList"></div>
+    </div></section>
+  </main>
+  <footer>千载同希随行导览 · 内容依据《【实践手册】千载同希希腊支队出行手册》</footer>
+  <nav class="dock" aria-label="底部导航"><a href="#schedule">行程</a><a href="#prepare">准备</a><a href="#safety">安全</a><a href="#research">调研</a></nav>
+  <button class="search-fab" id="openSearch" type="button" aria-label="打开搜索" title="搜索"><img src="assets/icons/search.svg" alt=""></button>
+  <div class="search-overlay" id="searchOverlay" aria-hidden="true"><aside class="search-panel" role="dialog" aria-modal="true" aria-labelledby="searchTitle"><div class="search-head"><h2 id="searchTitle">快速检索</h2><button class="close-search" id="closeSearch" type="button" aria-label="关闭搜索">×</button></div><p style="color:var(--muted);font-size:13px">搜索行程、住宿、物资、希腊语、交通、安全、公开电话与调研占位；成员紧急联系人不会被搜索。</p><div class="search-box"><input id="searchInput" type="search" placeholder="例如：护照、5日票、166、克诺索斯"><button class="button" id="searchButton" type="button">搜索</button></div><div class="search-results" id="searchResults"></div></aside></div>
+  <script src="assets/app-v2.js"></script>
 </body>
 </html>
+

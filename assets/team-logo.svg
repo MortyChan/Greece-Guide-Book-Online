@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="千载同希支队 logo">
+  <rect width="640" height="640" rx="96" fill="#ffffff"/>
+  <g fill="#1768b2">
+    <path d="M100 514c54-12 108-18 164-18 28 0 49 8 56 37 7-29 28-37 56-37 56 0 110 6 164 18l-18 38c-53-10-103-15-150-15-25 0-39 8-52 39-13-31-27-39-52-39-47 0-97 5-150 15z"/>
+    <rect x="137" y="244" width="56" height="68" rx="9"/>
+    <rect x="218" y="244" width="56" height="68" rx="9"/>
+    <rect x="299" y="244" width="56" height="68" rx="9"/>
+    <rect x="380" y="244" width="56" height="68" rx="9"/>
+    <rect x="461" y="244" width="56" height="68" rx="9"/>
+    <rect x="119" y="210" width="74" height="45" rx="9"/>
+    <rect x="447" y="210" width="74" height="45" rx="9"/>
+    <path d="M180 178h280a10 10 0 0 1 10 10v74H170v-74a10 10 0 0 1 10-10z"/>
+    <path d="M214 172c13-53 55-83 106-83s93 30 106 83z"/>
+    <path d="M176 268l131-84a25 25 0 0 1 26 0l131 84z" fill="#fff"/>
+    <path d="M180 276h280v15H180z"/>
+    <path d="M126 296h73v28h-73zM207 296h73v28h-73zM288 296h73v28h-73zM369 296h73v28h-73zM450 296h73v28h-73z"/>
+    <path d="M140 322h41v176h-41zM221 322h41v176h-41zM302 322h41v176h-41zM383 322h41v176h-41zM464 322h41v176h-41z"/>
+  </g>
+  <g fill="none" stroke="#1768b2" stroke-width="10" stroke-linecap="round">
+    <path d="M80 116C49 169 43 228 66 294c15 43 11 79-11 113"/>
+    <path d="M560 116c31 53 37 112 14 178-15 43-11 79 11 113"/>
+  </g>
+  <g fill="#1768b2">
+    <ellipse cx="72" cy="169" rx="16" ry="34" transform="rotate(-39 72 169)"/><ellipse cx="109" cy="202" rx="16" ry="34" transform="rotate(73 109 202)"/><ellipse cx="61" cy="249" rx="16" ry="34" transform="rotate(-43 61 249)"/><ellipse cx="112" cy="289" rx="16" ry="34" transform="rotate(72 112 289)"/><ellipse cx="57" cy="358" rx="16" ry="34" transform="rotate(-35 57 358)"/>
+    <ellipse cx="568" cy="169" rx="16" ry="34" transform="rotate(39 568 169)"/><ellipse cx="531" cy="202" rx="16" ry="34" transform="rotate(-73 531 202)"/><ellipse cx="579" cy="249" rx="16" ry="34" transform="rotate(43 579 249)"/><ellipse cx="528" cy="289" rx="16" ry="34" transform="rotate(-72 528 289)"/><ellipse cx="583" cy="358" rx="16" ry="34" transform="rotate(35 583 358)"/>
+  </g>
+</svg>
+
