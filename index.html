@@ -5,17 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f5f5f7">
   <title>千载同希随行导览</title>
-  <link rel="stylesheet" href="assets/styles-v2.css?v=5">
+  <link rel="stylesheet" href="assets/styles-v2.css?v=6">
 </head>
 <body>
   <a class="skip-link" href="#schedule">跳到主要内容</a>
+  <div class="page-ambient" aria-hidden="true"></div>
   <div class="scroll-progress" aria-hidden="true"><span></span></div>
   <header class="topbar"><div class="topbar-inner">
     <img src="assets/team-logo.svg" alt="千载同希支队 logo">
     <strong>日新书院“千载同希”赴希腊调研古典文明现代转化实践支队</strong>
   </div></header>
   <main>
-    <section class="hero" id="top" aria-labelledby="hero-title"><div class="hero-media" aria-hidden="true"></div><div class="hero-inner">
+    <section class="hero" id="top" aria-labelledby="hero-title"><div class="hero-media" aria-hidden="true"></div><div class="hero-glass-plane" aria-hidden="true"></div><div class="hero-inner">
       <p class="eyebrow">Qian Zai Tong Xi · Greece Guide</p><h1 id="hero-title">随行导览。</h1>
       <p class="hero-copy">把行程、住宿、物资、安全与调研资料装进手机。新增希腊内容已按 6 月 23 日实践手册整理。</p>
       <div class="hero-meta"><span class="chip">2025.07.13-07.23</span><span class="chip">雅典 · 伊拉克利翁</span><span class="chip">手机优先</span><span class="chip">紧急联系人已加锁</span></div>
@@ -31,8 +32,8 @@
     <section class="band white" id="prepare"><div class="section-inner reveal">
       <div class="section-head"><div><p class="eyebrow">Before Departure</p><h2>行前准备</h2></div><p>希腊语、住宿和物资整理均来自新版手册。清单勾选会保存在当前浏览器中。</p></div>
       <h3 class="subhead">住宿信息</h3><div class="grid-2" id="hotels">
-        <article class="hotel" id="hotel-athens"><div class="hotel-media"><img src="assets/manual-2026/president-hotel.png" alt="雅典总统酒店 President Hotel" loading="lazy"></div><div class="hotel-body"><p class="eyebrow">Athens</p><h3>总统酒店 President Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. Kifisias 43, Athina</p><p>电话：+0030-21-06989000<br>入住 2025.07.14，退房 2025.07.18，共 4 晚。</p></div></article>
-        <article class="hotel" id="hotel-heraklion"><div class="hotel-media"><img src="assets/manual-2026/castello-city-hotel.png" alt="伊拉克利翁城市城堡酒店 Castello City Hotel" loading="lazy"></div><div class="hotel-body"><p class="eyebrow">Heraklion</p><h3>城市城堡酒店 Castello City Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. 62 Martiron 1</p><p>电话：+0030-281-0251212<br>入住 2025.07.19，退房 2025.07.22，共 3 晚。</p></div></article>
+        <article class="hotel" id="hotel-athens"><button class="hotel-media hotel-image-trigger" type="button" aria-label="放大查看雅典总统酒店图片" aria-haspopup="dialog"><img src="assets/manual-2026/president-hotel.png" alt="雅典总统酒店 President Hotel" loading="lazy"><span class="hotel-media-label">查看大图</span></button><div class="hotel-body"><p class="eyebrow">Athens</p><h3>总统酒店 President Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. Kifisias 43, Athina</p><p>电话：+0030-21-06989000<br>入住 2025.07.14，退房 2025.07.18，共 4 晚。</p></div></article>
+        <article class="hotel" id="hotel-heraklion"><button class="hotel-media hotel-image-trigger" type="button" aria-label="放大查看伊拉克利翁城市城堡酒店图片" aria-haspopup="dialog"><img src="assets/manual-2026/castello-city-hotel.png" alt="伊拉克利翁城市城堡酒店 Castello City Hotel" loading="lazy"><span class="hotel-media-label">查看大图</span></button><div class="hotel-body"><p class="eyebrow">Heraklion</p><h3>城市城堡酒店 Castello City Hotel</h3><p class="address"><img class="icon" src="assets/icons/map-pin.svg" alt="">Leof. 62 Martiron 1</p><p>电话：+0030-281-0251212<br>入住 2025.07.19，退房 2025.07.22，共 3 晚。</p></div></article>
       </div>
       <h3 class="subhead">常用希腊语</h3><div class="phrase-grid" id="phrases"></div>
       <details open id="support-details"><summary>支队物资 <span class="tag gold">4 项</span></summary><div class="details-body"><div class="check-grid" id="supportPacking"></div></div></details>
@@ -59,6 +60,7 @@
   <nav class="dock" aria-label="底部导航"><span class="dock-indicator" aria-hidden="true"></span><a href="#schedule">行程</a><a href="#prepare">准备</a><a href="#safety">安全</a><a href="#research">调研</a></nav>
   <button class="search-fab" id="openSearch" type="button" aria-label="打开搜索" title="搜索"><img src="assets/icons/search.svg" alt=""></button>
   <div class="search-overlay" id="searchOverlay" aria-hidden="true"><aside class="search-panel" role="dialog" aria-modal="true" aria-labelledby="searchTitle"><div class="search-head"><h2 id="searchTitle">快速检索</h2><button class="close-search" id="closeSearch" type="button" aria-label="关闭搜索">×</button></div><p style="color:var(--muted);font-size:13px">搜索行程、住宿、物资、希腊语、交通、安全、公开电话与调研占位；成员紧急联系人不会被搜索。</p><div class="search-box"><input id="searchInput" type="search" placeholder="例如：护照、5日票、166、克诺索斯"><button class="button" id="searchButton" type="button">搜索</button></div><div class="search-results" id="searchResults"></div></aside></div>
-  <script src="assets/app-v2.js?v=4"></script>
+  <div class="image-viewer" id="imageViewer" aria-hidden="true"><div class="image-viewer-dialog" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle"><button class="image-viewer-close" id="closeImageViewer" type="button" aria-label="关闭酒店图片">×</button><figure class="image-viewer-figure"><div class="image-viewer-photo"><img id="imageViewerImage" src="" alt=""></div><figcaption><strong id="imageViewerTitle"></strong><span id="imageViewerAddress"></span></figcaption></figure></div></div>
+  <script src="assets/app-v2.js?v=6"></script>
 </body>
 </html>
