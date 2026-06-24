@@ -96,11 +96,21 @@ salt:"DuyN5ElRl6z9VWtSGUVPSA==",iv:"JHqgYuPWq3gsfNxx",
 data:"4DMfXT2rN8eoh4Y77h97y2ikChFoosNW1OkQocgv1xP98Qoef6O1xPUlBwFgvLX1sJ44H418GO8IcroVHqRMkWOCympJR9kvrw5IW5hroWAuiv+zmDaEXP5DaMeKmjVlxQC75Of0YUwbVV5aDxh7TMpOO1DpHXBG7JpyoRqyplJHHD3l/wwOzp7nz24aeV9hpWMUCXbEzyrvVBw2Ejw0N/chkEfj5st58DBNXOdMUNtf8OEzVnzfzqNkoYRsff29eBXxUViccbgx8kLFVDb9oFNQimQX3hy14wV5A1Q6MgcTdo3a9l86+ivGrrQUUYlon762bdFmTd2hXZaXMvuqJ9jrixS43gWayMWlpR7+6Ssiggi/+1uHWk5lbyUeHgZQs+R6ZmvuxbMKqqIpX8inKvUzxAu9AsYbBb2JU06ZnGwsTNcbMkGclQUR0VOHXh9CDvOLBI9reWV9sMfuahkXaBTNpDflkPbqwaryXCM6aJ20/xqCMCZXSA38xKBKAbW+TS6eTmbzk3nELaFubDcLAxZJQErbpBg9A6U0GXnAhA7C26dIySUPcxLhRT7B8ZyS/rfmS9gcr78whEoL8uMLYNDXbLgmIVq49dJjy9LApDJaoCqUaxQPOmbhSsfXFEXICjgMvlfPw8LkAdi0XWR+8rRUbjBTOSKETxyZsofkD18GhWwRacnHwHb3rTxMo/qs1QW1IHc9BLzVgdduR5Je5cfbC74B74eWSQboBE0bOyplXbxenleXpG04QTXA+pgH/SjWSFvghWcjaqIXOXpbnnE8bNr+mybTX5EbNlVltmO9loETvA1cVpXcyxSix/ZLPq/GUArb38xzt7Z6kpB8F0WPit6GhHxKv4uGSQVQ2DpReGH8sO9wsRtkafa0lZ7wzqJz/IQKzj++TYhRzpvTqeWNoSr3UqMXkLkkW87LJ0aFLOlXNwdPhRgNDQHWdyhnVU110HZdLEOJZp/A7JWC9Dr6l9BjibgZq5WSiFYYRlFpLHN/n8o="
 };
 
+const motionPreference=window.matchMedia("(prefers-reduced-motion: reduce)");
+function replayContentMotion(element){
+if(!element||motionPreference.matches)return;
+element.classList.remove("content-refresh");
+void element.offsetWidth;
+element.classList.add("content-refresh");
+}
+
 function renderDay(index=0){
 const day=days[index];
 document.querySelectorAll(".tab-button").forEach((button,i)=>{button.classList.toggle("is-active",i===index);button.setAttribute("aria-selected",i===index?"true":"false")});
-document.querySelector("#dayCard").innerHTML=`<div class="date">${day.date}</div><div class="city">${day.city}</div><p><strong>导游/负责人：</strong>${day.guide}</p><p><strong>状态：</strong>${day.status}</p><div class="tags">${day.tags.map((tag,i)=>`<span class="tag ${i%2?"blue":"gold"}">${tag}</span>`).join("")}</div>`;
-document.querySelector("#timeline").innerHTML=day.events.map(([time,place,desc,note])=>`<article class="event"><div class="event-time">${time}</div><div class="event-place">${place}</div><p>${desc}<span class="event-note">${note}</span></p></article>`).join("");
+const dayCard=document.querySelector("#dayCard"),timeline=document.querySelector("#timeline");
+dayCard.innerHTML=`<div class="date">${day.date}</div><div class="city">${day.city}</div><p><strong>导游/负责人：</strong>${day.guide}</p><p><strong>状态：</strong>${day.status}</p><div class="tags">${day.tags.map((tag,i)=>`<span class="tag ${i%2?"blue":"gold"}">${tag}</span>`).join("")}</div>`;
+timeline.innerHTML=day.events.map(([time,place,desc,note],eventIndex)=>`<article class="event" style="--item-index:${eventIndex}"><div class="event-time">${time}</div><div class="event-place">${place}</div><p>${desc}<span class="event-note">${note}</span></p></article>`).join("");
+replayContentMotion(dayCard);replayContentMotion(timeline);
 }
 function makeChecklist(containerId,items,prefix){
 const root=document.querySelector("#"+containerId);
@@ -110,7 +120,9 @@ root.querySelectorAll("input").forEach(input=>{input.checked=localStorage.getIte
 function renderTransport(city="athens"){
 const data=transport[city];
 document.querySelectorAll(".segment-button").forEach(button=>{const active=button.dataset.city===city;button.classList.toggle("is-active",active);button.setAttribute("aria-selected",active?"true":"false")});
-document.querySelector("#transportPanel").innerHTML=`<h3>${data.title}</h3><p>${data.intro}</p><div class="transport-grid">${data.blocks.map(([title,body])=>`<article class="transport-block"><h4>${title}</h4><p>${body}</p></article>`).join("")}</div>`;
+const panel=document.querySelector("#transportPanel");
+panel.innerHTML=`<h3>${data.title}</h3><p>${data.intro}</p><div class="transport-grid">${data.blocks.map(([title,body],blockIndex)=>`<article class="transport-block" style="--item-index:${blockIndex}"><h4>${title}</h4><p>${body}</p></article>`).join("")}</div>`;
+replayContentMotion(panel);
 }
 function renderStaticContent(){
 document.querySelector("#dayTabs").innerHTML=days.map((day,index)=>`<button class="tab-button ${index===0?"is-active":""}" type="button" role="tab" aria-selected="${index===0}" data-index="${index}">${day.date}</button>`).join("");
@@ -177,3 +189,28 @@ const sectionObserver=new IntersectionObserver(entries=>{entries.filter(entry=>e
 const revealObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("is-visible");revealObserver.unobserve(entry.target)}})},{threshold:.08});document.querySelectorAll(".reveal").forEach(element=>revealObserver.observe(element));
 if(location.hash){const deepTarget=document.querySelector(location.hash);deepTarget?.querySelector(".reveal")?.classList.add("is-visible");deepTarget?.scrollIntoView({behavior:"auto",block:"start"});}
 
+document.body.classList.add("motion-ready");
+requestAnimationFrame(()=>document.body.classList.add("is-ready"));
+
+const motionItems=[...document.querySelectorAll(".status-item,.hotel,.phrase-card,.weather-item,.phone-card,.locked")];
+motionItems.forEach((item,index)=>{item.classList.add("motion-item");item.style.setProperty("--stagger-index",String(index%6))});
+if(motionPreference.matches){motionItems.forEach(item=>item.classList.add("is-shown"))}else{
+const motionObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("is-shown");motionObserver.unobserve(entry.target)}})},{threshold:.12,rootMargin:"0px 0px -4% 0px"});
+motionItems.forEach(item=>motionObserver.observe(item));
+}
+
+const topbar=document.querySelector(".topbar"),hero=document.querySelector(".hero"),progressBar=document.querySelector(".scroll-progress span");
+let scrollFrame=0;
+function updateScrollEffects(){
+scrollFrame=0;
+const y=window.scrollY,max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
+progressBar.style.transform=`scaleX(${Math.min(1,y/max)})`;
+topbar.classList.toggle("is-scrolled",y>10);
+if(!motionPreference.matches&&hero&&y<window.innerHeight*1.25){hero.style.setProperty("--hero-shift",`${Math.min(34,y*.075)}px`)}
+}
+function requestScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects)}
+window.addEventListener("scroll",requestScrollEffects,{passive:true});
+window.addEventListener("resize",requestScrollEffects,{passive:true});
+updateScrollEffects();
+
+document.querySelectorAll("details").forEach(detail=>detail.addEventListener("toggle",()=>{if(detail.open)replayContentMotion(detail.querySelector(".details-body"))}));
