@@ -30,12 +30,18 @@ const personalPacking=[
 ];
 
 const contacts=[
-["李江静","女","清华大学马克思主义学院 副教授","带队教师"],["张佳敏","女","清华大学人文学院2024级硕士生","带队辅导员"],
-["宁静","女","清华大学新闻学院2025级硕士生","带队辅导员"],["武泽英","女","清华大学日新书院2022级本科生","支队长"],
-["王冠","男","清华大学日新书院2024级本科生","支队长"],["王敬宜","女","清华大学日新书院2023级本科生","支队员"],
-["邵舒婷","女","清华大学日新书院2024级本科生","支队员"],["夏宇欣","女","清华大学日新书院2024级本科生","支队员"],
-["陈正阳","男","清华大学日新书院2024级本科生","支队员"],["周小乔","女","清华大学日新书院2025级本科生","支队员"],
-["宫僖","女","清华大学日新书院2025级本科生","支队员"],["饶晨浩","男","清华大学日新书院2025级本科生","支队员"]
+["李江静","女","清华大学马克思主义学院 副教授","带队教师","15201436143"],
+["张佳敏","女","清华大学人文学院2024级硕士生","带队辅导员","13999446202"],
+["宁静","女","清华大学新闻学院2025级硕士生","带队辅导员","17779511233"],
+["武泽英","女","清华大学日新书院2022级本科生","支队长","13651106737"],
+["王冠","男","清华大学日新书院2024级本科生","支队长","17730304981"],
+["王敬宜","女","清华大学日新书院2023级本科生","支队员","17326839859"],
+["邵舒婷","女","清华大学日新书院2024级本科生","支队员","13813867656"],
+["夏宇欣","女","清华大学日新书院2024级本科生","支队员","19808097632"],
+["陈正阳","男","清华大学日新书院2024级本科生","支队员","17817729632"],
+["周小乔","女","清华大学日新书院2025级本科生","支队员","13662614282"],
+["宫僖","女","清华大学日新书院2025级本科生","支队员","18561931032"],
+["饶晨浩","男","清华大学日新书院2025级本科生","支队员","13817972668"]
 ];
 
 const transport={
@@ -148,13 +154,13 @@ const data=transport[city];
 const direction=city===activeTransportCity?1:(city==="heraklion"?1:-1);activeTransportCity=city;
 document.querySelectorAll(".segment-button").forEach(button=>{const active=button.dataset.city===city;button.classList.toggle("is-active",active);button.setAttribute("aria-selected",active?"true":"false")});
 const panel=document.querySelector("#transportPanel");
-return swapContent(panel,()=>{panel.innerHTML=`<h3>${data.title}</h3><p>${data.intro}</p><div class="transport-grid">${data.blocks.map(([title,body])=>`<article class="transport-block"><h4>${title}</h4><p>${body}</p></article>`).join("")}</div>`},{direction,immediate,children:".transport-block"});
+return swapContent(panel,()=>{panel.innerHTML=`<h3>${data.title}</h3><p>${data.intro}</p><div class="transport-grid" aria-label="${data.title}交通信息">${data.blocks.map(([title,body],index)=>`<article class="transport-block ${index%2?"is-light":"is-dark"}"><span class="transport-index">${String(index+1).padStart(2,"0")}</span><h4>${title}</h4><p>${body}</p></article>`).join("")}</div>`},{direction,immediate,children:".transport-block"});
 }
 function renderStaticContent(){
 document.querySelector("#dayTabs").innerHTML=days.map((day,index)=>`<button class="tab-button ${index===0?"is-active":""}" type="button" role="tab" aria-selected="${index===0}" data-index="${index}">${day.date}</button>`).join("");
 document.querySelector("#phrases").innerHTML=phrases.map(([cn,gr])=>`<article class="phrase-card"><strong>${cn}</strong><span>${gr}</span></article>`).join("");
 makeChecklist("supportPacking",supportPacking,"support");makeChecklist("personalPacking",personalPacking,"personal");
-document.querySelector("#contactsTable").innerHTML=contacts.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join("")}</tr>`).join("");
+document.querySelector("#contactsTable").innerHTML=contacts.map(row=>`<tr>${row.map((cell,index)=>index===4?`<td><a class="member-phone" href="tel:${String(cell).replace(/\s/g,"")}">${cell}</a></td>`:`<td>${cell}</td>`).join("")}</tr>`).join("");
 document.querySelector("#safetyGroups").innerHTML=safetyGroups.map(group=>`<details id="${group.id}"><summary>${group.title} <span class="tag muted">${group.range}</span></summary><div class="details-body"><ul>${group.items.map(item=>`<li>${item}</li>`).join("")}</ul></div></details>`).join("");
 document.querySelector("#publicPhones").innerHTML=publicPhones.map(([number,title,body,dial])=>`<article class="phone-card" id="phone-${dial.replace(/\D/g,"")}"><div class="phone-number">${number}</div><h3>${title}</h3><p>${body}</p><a class="call-link" href="tel:${dial}"><img src="assets/icons/phone.svg" alt="">拨打</a></article>`).join("");
 document.querySelector("#researchList").innerHTML=research.map(([date,body])=>`<details><summary>${date}<span class="placeholder-mark">待更新</span></summary><div class="details-body"><p>${body}</p></div></details>`).join("");
@@ -169,7 +175,7 @@ return JSON.parse(new TextDecoder().decode(plain));
 }
 async function unlockEmergency(){
 const status=document.querySelector("#emergencyStatus"),content=document.querySelector("#emergencyContent");status.textContent="正在验证…";
-try{const rows=await decryptEmergency(document.querySelector("#emergencyPassword").value);content.innerHTML=`<div class="table-wrap"><table><thead><tr><th>成员</th><th>成员电话</th><th>紧急联系人</th><th>关系</th><th>紧急电话</th></tr></thead><tbody>${rows.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;content.hidden=false;status.textContent="已解锁。使用后请点击“锁定”。"}catch{content.hidden=true;content.innerHTML="";status.textContent="密码错误，未显示联系人信息。"}
+try{const rows=await decryptEmergency(document.querySelector("#emergencyPassword").value);content.innerHTML=`<div class="table-wrap"><table><thead><tr><th>成员</th><th>亲属紧急联系人</th><th>关系</th><th>紧急电话</th></tr></thead><tbody>${rows.map(row=>`<tr>${[row[0],row[2],row[3],row[4]].map(cell=>`<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;content.hidden=false;status.textContent="已解锁。用完，记得重新锁定。"}catch{content.hidden=true;content.innerHTML="";status.textContent="密码不正确。请检查后再试。"}
 }
 function lockEmergency(){document.querySelector("#emergencyPassword").value="";document.querySelector("#emergencyContent").hidden=true;document.querySelector("#emergencyContent").innerHTML="";document.querySelector("#emergencyStatus").textContent="已锁定。"}
 
@@ -188,9 +194,9 @@ const searchCorpus=[
 ];
 function runSearch(){
 const keyword=document.querySelector("#searchInput").value.trim().toLowerCase(),output=document.querySelector("#searchResults");
-if(!keyword){output.innerHTML='<p class="empty">输入关键词后开始检索。</p>';return}
+if(!keyword){output.innerHTML='<p class="empty">输入关键词，马上找到。</p>';return}
 const matches=searchCorpus.filter(item=>item.text.toLowerCase().includes(keyword)).slice(0,20);
-output.innerHTML=matches.length?matches.map((item,index)=>`<button class="search-result" type="button" data-result="${index}"><small>${item.type}</small><strong>${item.title}</strong></button>`).join(""):'<p class="empty">没有找到匹配内容。</p>';
+output.innerHTML=matches.length?matches.map((item,index)=>`<button class="search-result" type="button" data-result="${index}"><small>${item.type}</small><strong>${item.title}</strong></button>`).join(""):'<p class="empty">没有匹配结果。换个词试试。</p>';
 output.querySelectorAll(".search-result").forEach((button,index)=>button.addEventListener("click",()=>jumpToResult(matches[index])));
 }
 function jumpToResult(item){
