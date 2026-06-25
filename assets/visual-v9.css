@@ -1,3 +1,16 @@
-/* V9 performance layer: use a tiny WebP hero for first paint. */
-.hero-media{background-image:url("visuals/hero-greece-apple-1200.webp")!important}
+/* V9 performance layer: show a tiny WebP first, then blend in the crisp hero. */
+.hero-media,
 .page-ambient{background-image:url("visuals/hero-greece-apple-1200.webp")!important}
+.hero-media::after,
+.page-ambient::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("visuals/hero-greece-apple.png") 50% 50%/cover no-repeat;
+  opacity:0;
+  transition:opacity 680ms cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+.page-ambient::after{background-position:58% 50%}
+body.hero-hd-ready .hero-media::after,
+body.hero-hd-ready .page-ambient::after{opacity:1}
