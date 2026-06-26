@@ -37,11 +37,17 @@ audio.addEventListener("ended",()=>{if(fallbackTimer)clearTimeout(fallbackTimer)
 audio.addEventListener("error",fallback);
 audio.play().catch(fallback);
 }
-function playPhrase(button){
+async function playPhrase(button){
 const src=button.dataset.audio;
 if(!src)return;
 if(currentAudio){currentAudio.pause();currentAudio.currentTime=0;resetButton(currentButton)}
 if(currentButton===button){currentAudio=null;currentButton=null;return}
+try{
+const probe=await fetch(src,{method:"HEAD",cache:"no-store"});
+if(!probe.ok){playAudio(button,button.dataset.tts||src,false);return}
+}catch(error){
+if(button.dataset.tts){playAudio(button,button.dataset.tts,false);return}
+}
 playAudio(button,src,true);
 }
 root.addEventListener("click",event=>{const button=event.target.closest(".phrase-play");if(button){event.preventDefault();event.stopImmediatePropagation();playPhrase(button)}},true);
