@@ -26,11 +26,16 @@ speechSynthesis.speak(utterance);
 }
 function playAudio(button,src,allowFallback){
 const audio=new Audio(src);
+let settled=false;
+const fallback=()=>{if(settled)return;settled=true;if(allowFallback&&button.dataset.tts&&src!==button.dataset.tts){audio.pause();playAudio(button,button.dataset.tts,false)}else speakFallback(button)};
+const fallbackTimer=allowFallback?setTimeout(fallback,1000):null;
 currentAudio=audio;currentButton=button;
 button.classList.add("is-playing");button.textContent="播放中";
-audio.addEventListener("ended",()=>{resetButton(button);if(currentAudio===audio){currentAudio=null;currentButton=null}});
-audio.addEventListener("error",()=>{if(allowFallback&&button.dataset.tts&&src!==button.dataset.tts){playAudio(button,button.dataset.tts,false)}else speakFallback(button)});
-audio.play().catch(()=>{if(allowFallback&&button.dataset.tts&&src!==button.dataset.tts){playAudio(button,button.dataset.tts,false)}else speakFallback(button)});
+audio.addEventListener("playing",()=>{settled=true;if(fallbackTimer)clearTimeout(fallbackTimer)});
+audio.addEventListener("canplay",()=>{settled=true;if(fallbackTimer)clearTimeout(fallbackTimer)});
+audio.addEventListener("ended",()=>{if(fallbackTimer)clearTimeout(fallbackTimer);resetButton(button);if(currentAudio===audio){currentAudio=null;currentButton=null}});
+audio.addEventListener("error",fallback);
+audio.play().catch(fallback);
 }
 function playPhrase(button){
 const src=button.dataset.audio;
