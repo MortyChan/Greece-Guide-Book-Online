@@ -1,4 +1,5 @@
-/* V9 performance layer: show a tiny WebP first, then blend in the crisp hero. */
+/* V10 motion/performance layer: crisp progressive hero, springy controls, calmer mobile rendering. */
+:root{--ease-bounce:cubic-bezier(.18,1.28,.32,1);--ease-snappy:cubic-bezier(.2,.9,.2,1)}
 .hero-media,
 .page-ambient{background-image:url("visuals/hero-greece-apple-1200.webp")!important}
 .hero-media::after,
@@ -14,3 +15,31 @@
 .page-ambient::after{background-position:58% 50%}
 body.hero-hd-ready .hero-media::after,
 body.hero-hd-ready .page-ambient::after{opacity:1}
+.band{content-visibility:auto;contain-intrinsic-size:760px;contain:layout paint style}
+.hero,.status-band{content-visibility:visible;contain:none}
+.page-ambient{will-change:auto}
+.hero-visible .page-ambient{will-change:opacity,transform}
+.dock-indicator{transition:transform 520ms var(--ease-bounce),box-shadow 260ms var(--ease-snappy)!important}
+.dock:active .dock-indicator{box-shadow:0 6px 18px rgba(29,29,31,.16),inset 0 1px 0 rgba(255,255,255,.32)}
+.search-panel{transition:transform 420ms var(--ease-bounce),opacity 220ms ease-out,box-shadow 240ms ease-out!important}
+.search-overlay:not(.is-open) .search-panel{transition-duration:220ms,160ms,160ms!important;transition-timing-function:cubic-bezier(.4,0,1,1),ease-in,ease-in!important}
+.search-overlay.is-springing .search-panel{animation:searchPanelSettle 440ms var(--ease-bounce) both}
+.motion-ready.is-ready .hero .eyebrow,
+.motion-ready.is-ready .hero h1,
+.motion-ready.is-ready .hero-copy,
+.motion-ready.is-ready .hero-meta{animation-timing-function:var(--ease-bounce)!important}
+.reveal.is-visible .motion-child{animation-timing-function:var(--ease-bounce)!important}
+.tab-button.is-active,.segment-button.is-active,.phrase-play.is-playing{animation:controlPop 280ms var(--ease-bounce) both}
+.target-flash{animation:targetFlashV10 760ms var(--ease-bounce)!important}
+@keyframes controlPop{0%{transform:scale(.98)}62%{transform:scale(1.025)}100%{transform:scale(1)}}
+@keyframes searchPanelSettle{0%{transform:translate3d(104%,0,0) scale(.982)}72%{transform:translate3d(-8px,0,0) scale(1.004)}100%{transform:translate3d(0,0,0) scale(1)}}
+@keyframes targetFlashV10{0%,100%{box-shadow:var(--shadow-1,none)}38%{box-shadow:0 0 0 5px rgba(23,104,178,.18),0 18px 48px rgba(23,104,178,.13)}}
+@media(max-width:620px){
+.band{contain-intrinsic-size:980px}
+.search-overlay.is-springing .search-panel{animation-name:searchPanelSettleMobile}
+@keyframes searchPanelSettleMobile{0%{transform:translate3d(0,104%,0) scale(.982)}72%{transform:translate3d(0,-8px,0) scale(1.004)}100%{transform:translate3d(0,0,0) scale(1)}}
+}
+@media(prefers-reduced-motion:reduce){
+.band{content-visibility:visible;contain:none}
+.dock-indicator,.search-panel,.tab-button.is-active,.segment-button.is-active,.phrase-play.is-playing,.target-flash{animation:none!important;transition-duration:.01ms!important}
+}

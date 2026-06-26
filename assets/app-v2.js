@@ -14,6 +14,7 @@ const phrases=[
 ["卫生间在哪里？","Πού είναι η τουαλέτα?"],["您能帮助我吗？","Μπορείτε να με βοηθήσετε?"],
 ["我需要联系中国大使馆","Πρέπει να επικοινωνήσω με την Κινεζική Πρεσβεία"],["您会讲英语吗？","Μιλάτε αγγλικά?"]
 ];
+const phraseSpeechText=phrase=>phrase.replace(/\s*\([^)]*\)\s*/g,"").trim();
 
 const supportPacking=[
 ["纪念品","按交流对象与活动安排分装，保留备用份。"],["队旗","随身携带，机场、酒店、调研点合影前确认保管人。"],
@@ -103,6 +104,8 @@ data:"4DMfXT2rN8eoh4Y77h97y2ikChFoosNW1OkQocgv1xP98Qoef6O1xPUlBwFgvLX1sJ44H418GO
 };
 
 const motionPreference=window.matchMedia("(prefers-reduced-motion: reduce)");
+const easeSpring="cubic-bezier(.18,1.28,.32,1)";
+const easeSoft="cubic-bezier(.16,1,.3,1)";
 const swapRevisions=new WeakMap(),managedAnimations=new WeakMap(),detailStates=new WeakMap();
 let activeDayIndex=0,activeTransportCity="athens";
 let viewerTrigger=null,viewerAnimation=null,viewerCaptionAnimation=null,viewerClosing=false;
@@ -113,15 +116,18 @@ cancelManaged(element);element.style.willChange="transform, opacity";
 const animation=element.animate(keyframes,options);managedAnimations.set(element,animation);
 return animation.finished.catch(()=>{}).finally(()=>{if(managedAnimations.get(element)===animation){managedAnimations.delete(element);element.style.removeProperty("will-change")}});
 }
+function springIn(direction=1,offset=16){
+return[{opacity:0,transform:`translate3d(${offset*direction}px,10px,0) scale(.982)`},{opacity:1,transform:`translate3d(${-3*direction}px,-1px,0) scale(1.006)`,offset:.72},{opacity:1,transform:"translate3d(0,0,0) scale(1)"}];
+}
 async function swapContent(element,update,{direction=1,immediate=false,children=""}={}){
 const revision=(swapRevisions.get(element)||0)+1;swapRevisions.set(element,revision);
 cancelManaged(element);
 if(immediate||motionPreference.matches||!element.children.length){update();return}
-await playManaged(element,[{opacity:1,transform:"translate3d(0,0,0)"},{opacity:.18,transform:`translate3d(${-10*direction}px,-2px,0)`}],{duration:140,easing:"cubic-bezier(.4,0,1,1)",fill:"forwards"});
+await playManaged(element,[{opacity:1,transform:"translate3d(0,0,0) scale(1)"},{opacity:.18,transform:`translate3d(${-12*direction}px,-2px,0) scale(.992)`}],{duration:130,easing:"cubic-bezier(.4,0,1,1)",fill:"forwards"});
 if(swapRevisions.get(element)!==revision)return;
 update();
-const childAnimations=children?[...element.querySelectorAll(children)].map((child,index)=>{child.style.willChange="transform, opacity";const animation=child.animate([{opacity:0,transform:`translate3d(${14*direction}px,8px,0) scale(.992)`},{opacity:1,transform:"translate3d(0,0,0) scale(1)"}],{duration:300,delay:index*32,easing:"cubic-bezier(.16,1,.3,1)",fill:"both"});animation.finished.catch(()=>{}).finally(()=>child.style.removeProperty("will-change"));return animation}):[];
-await playManaged(element,[{opacity:.12,transform:"translate3d(0,4px,0)"},{opacity:1,transform:"translate3d(0,0,0)"}],{duration:300,easing:"cubic-bezier(.16,1,.3,1)",fill:"both"});
+const childAnimations=children?[...element.querySelectorAll(children)].map((child,index)=>{child.style.willChange="transform, opacity";const animation=child.animate(springIn(direction,16),{duration:360,delay:index*28,easing:easeSpring,fill:"both"});animation.finished.catch(()=>{}).finally(()=>child.style.removeProperty("will-change"));return animation}):[];
+await playManaged(element,springIn(direction,10),{duration:340,easing:easeSpring,fill:"both"});
 await Promise.allSettled(childAnimations.map(animation=>animation.finished));
 }
 function setDetailExpanded(detail,expanded,animate=true){
@@ -132,8 +138,8 @@ const state={targetOpen:expanded,animation:null};detailStates.set(detail,state);
 if(!animate||motionPreference.matches||!body){detail.open=expanded;return}
 if(expanded)detail.open=true;
 body.style.willChange="transform, opacity, clip-path";
-const keyframes=expanded?[{opacity:0,transform:"translate3d(0,-10px,0) scale(.995)",clipPath:"inset(0 0 18% 0)"},{opacity:1,transform:"translate3d(0,0,0) scale(1)",clipPath:"inset(0 0 0 0)"}]:[{opacity:1,transform:"translate3d(0,0,0)",clipPath:"inset(0 0 0 0)"},{opacity:0,transform:"translate3d(0,-7px,0)",clipPath:"inset(0 0 22% 0)"}];
-const animation=body.animate(keyframes,{duration:expanded?300:180,easing:expanded?"cubic-bezier(.16,1,.3,1)":"cubic-bezier(.4,0,1,1)",fill:"both"});state.animation=animation;
+const keyframes=expanded?[{opacity:0,transform:"translate3d(0,-10px,0) scale(.992)",clipPath:"inset(0 0 20% 0)"},{opacity:1,transform:"translate3d(0,2px,0) scale(1.004)",clipPath:"inset(0 0 0 0)",offset:.74},{opacity:1,transform:"translate3d(0,0,0) scale(1)",clipPath:"inset(0 0 0 0)"}]:[{opacity:1,transform:"translate3d(0,0,0)",clipPath:"inset(0 0 0 0)"},{opacity:0,transform:"translate3d(0,-7px,0) scale(.996)",clipPath:"inset(0 0 22% 0)"}];
+const animation=body.animate(keyframes,{duration:expanded?340:180,easing:expanded?easeSpring:"cubic-bezier(.4,0,1,1)",fill:"both"});state.animation=animation;
 animation.finished.catch(()=>{}).finally(()=>{body.style.removeProperty("will-change");if(detailStates.get(detail)!==state)return;if(!state.targetOpen)detail.open=false;animation.cancel();state.animation=null});
 }
 
@@ -147,7 +153,7 @@ return swapContent(layout,()=>{dayCard.innerHTML=`<div class="date">${day.date}<
 function makeChecklist(containerId,items,prefix){
 const root=document.querySelector("#"+containerId);
 root.innerHTML=items.map(([title,note],index)=>{const key=`qztx-${prefix}-${index}`;return`<label class="check-row"><input type="checkbox" data-store="${key}"><span><strong>${title}</strong>${note}</span></label>`}).join("");
-root.querySelectorAll("input").forEach(input=>{input.checked=localStorage.getItem(input.dataset.store)==="1";input.addEventListener("change",()=>{localStorage.setItem(input.dataset.store,input.checked?"1":"0");const row=input.closest(".check-row");if(!motionPreference.matches)playManaged(row,[{transform:"scale(1)"},{transform:input.checked?"scale(1.018)":"scale(.985)"},{transform:"scale(1)"}],{duration:260,easing:"cubic-bezier(.16,1,.3,1)"})})});
+root.querySelectorAll("input").forEach(input=>{input.checked=localStorage.getItem(input.dataset.store)==="1";input.addEventListener("change",()=>{localStorage.setItem(input.dataset.store,input.checked?"1":"0");const row=input.closest(".check-row");if(!motionPreference.matches)playManaged(row,[{transform:"scale(1)"},{transform:input.checked?"scale(1.024)":"scale(.982)",offset:.5},{transform:"scale(1)"}],{duration:280,easing:easeSpring})})});
 }
 function renderTransport(city="athens",immediate=false){
 const data=transport[city];
@@ -158,7 +164,7 @@ return swapContent(panel,()=>{panel.innerHTML=`<h3>${data.title}</h3><p>${data.i
 }
 function renderStaticContent(){
 document.querySelector("#dayTabs").innerHTML=days.map((day,index)=>`<button class="tab-button ${index===0?"is-active":""}" type="button" role="tab" aria-selected="${index===0}" data-index="${index}">${day.date}</button>`).join("");
-document.querySelector("#phrases").innerHTML=phrases.map(([cn,gr])=>`<article class="phrase-card"><strong>${cn}</strong><span>${gr}</span></article>`).join("");
+document.querySelector("#phrases").innerHTML=phrases.map(([cn,gr],index)=>{const isDark=(Math.floor(index/2)+index%2)%2===0;return`<article class="phrase-card ${isDark?"is-dark":"is-light"}"><div><strong>${cn}</strong><span>${gr}</span></div><button class="phrase-play" type="button" data-speech="${phraseSpeechText(gr)}" aria-label="播放${cn}的希腊语发音">播放</button></article>`}).join("");
 makeChecklist("supportPacking",supportPacking,"support");makeChecklist("personalPacking",personalPacking,"personal");
 document.querySelector("#contactsTable").innerHTML=contacts.map(row=>`<tr>${row.map((cell,index)=>index===4?`<td><a class="member-phone" href="tel:${String(cell).replace(/\s/g,"")}">${cell}</a></td>`:`<td>${cell}</td>`).join("")}</tr>`).join("");
 document.querySelector("#safetyGroups").innerHTML=safetyGroups.map(group=>`<details id="${group.id}"><summary>${group.title} <span class="tag muted">${group.range}</span></summary><div class="details-body"><ul>${group.items.map(item=>`<li>${item}</li>`).join("")}</ul></div></details>`).join("");
@@ -206,8 +212,8 @@ if(item.research)[...document.querySelectorAll("#researchList details")].forEach
 closeSearch(false);setTimeout(()=>{target?.scrollIntoView({behavior:motionPreference.matches?"auto":"smooth",block:"center"});target?.classList.add("target-flash");setTimeout(()=>target?.classList.remove("target-flash"),720)},240);
 }
 let searchFocusReturn=null,searchTimer=0;
-function openSearch(){const overlay=document.querySelector("#searchOverlay");clearTimeout(searchTimer);searchFocusReturn=document.activeElement;overlay.classList.add("is-open");overlay.setAttribute("aria-hidden","false");document.querySelector("#openSearch").setAttribute("aria-expanded","true");document.body.classList.add("search-open");document.body.style.overflow="hidden";searchTimer=setTimeout(()=>document.querySelector("#searchInput").focus(),motionPreference.matches?0:300)}
-function closeSearch(restoreFocus=true){const overlay=document.querySelector("#searchOverlay");clearTimeout(searchTimer);overlay.classList.remove("is-open");overlay.setAttribute("aria-hidden","true");document.querySelector("#openSearch").setAttribute("aria-expanded","false");document.body.classList.remove("search-open");searchTimer=setTimeout(()=>{document.body.style.overflow="";if(restoreFocus)searchFocusReturn?.focus?.()},motionPreference.matches?0:235)}
+function openSearch(){const overlay=document.querySelector("#searchOverlay");clearTimeout(searchTimer);searchFocusReturn=document.activeElement;overlay.classList.add("is-open","is-springing");overlay.setAttribute("aria-hidden","false");document.querySelector("#openSearch").setAttribute("aria-expanded","true");document.body.classList.add("search-open");document.body.style.overflow="hidden";searchTimer=setTimeout(()=>{overlay.classList.remove("is-springing");document.querySelector("#searchInput").focus()},motionPreference.matches?0:380)}
+function closeSearch(restoreFocus=true){const overlay=document.querySelector("#searchOverlay");clearTimeout(searchTimer);overlay.classList.remove("is-open","is-springing");overlay.setAttribute("aria-hidden","true");document.querySelector("#openSearch").setAttribute("aria-expanded","false");document.body.classList.remove("search-open");searchTimer=setTimeout(()=>{document.body.style.overflow="";if(restoreFocus)searchFocusReturn?.focus?.()},motionPreference.matches?0:220)}
 
 function cancelViewerMotion(){viewerAnimation?.cancel();viewerCaptionAnimation?.cancel();viewerAnimation=null;viewerCaptionAnimation=null}
 function viewerTransform(from,to){
@@ -219,7 +225,7 @@ const sourceImage=trigger.querySelector("img"),hotel=trigger.closest(".hotel");v
 viewerImage.src=sourceImage.currentSrc||sourceImage.src;viewerImage.alt=sourceImage.alt;document.querySelector("#imageViewerTitle").textContent=hotel.querySelector("h3")?.textContent||sourceImage.alt;document.querySelector("#imageViewerAddress").textContent=hotel.querySelector(".address")?.textContent.trim()||"";
 overlay.classList.remove("is-closing");overlay.classList.add("is-open");overlay.setAttribute("aria-hidden","false");document.body.classList.add("image-viewer-open");
 await viewerImage.decode().catch(()=>{});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-if(!motionPreference.matches){const from=sourceImage.getBoundingClientRect(),to=photo.getBoundingClientRect(),start=viewerTransform(from,to);photo.style.willChange="transform, opacity";caption.style.willChange="transform, opacity";viewerAnimation=photo.animate([{opacity:.72,transform:start.transform,borderRadius:"18px"},{opacity:1,transform:"translate3d(0,0,0) scale(1,1)",borderRadius:getComputedStyle(photo).borderRadius}],{duration:440,easing:"cubic-bezier(.16,1,.3,1)",fill:"both"});viewerCaptionAnimation=caption.animate([{opacity:0,transform:"translate3d(0,14px,0)"},{opacity:1,transform:"translate3d(0,0,0)"}],{duration:320,delay:110,easing:"cubic-bezier(.16,1,.3,1)",fill:"both"});viewerAnimation.finished.catch(()=>{}).finally(()=>photo.style.removeProperty("will-change"));viewerCaptionAnimation.finished.catch(()=>{}).finally(()=>caption.style.removeProperty("will-change"))}
+if(!motionPreference.matches){const from=sourceImage.getBoundingClientRect(),to=photo.getBoundingClientRect(),start=viewerTransform(from,to);photo.style.willChange="transform, opacity";caption.style.willChange="transform, opacity";viewerAnimation=photo.animate([{opacity:.72,transform:start.transform,borderRadius:"18px"},{opacity:1,transform:"translate3d(0,-4px,0) scale(1.012,1.012)",offset:.78},{opacity:1,transform:"translate3d(0,0,0) scale(1,1)",borderRadius:getComputedStyle(photo).borderRadius}],{duration:470,easing:easeSpring,fill:"both"});viewerCaptionAnimation=caption.animate([{opacity:0,transform:"translate3d(0,14px,0)"},{opacity:1,transform:"translate3d(0,-2px,0)",offset:.78},{opacity:1,transform:"translate3d(0,0,0)"}],{duration:340,delay:100,easing:easeSpring,fill:"both"});viewerAnimation.finished.catch(()=>{}).finally(()=>photo.style.removeProperty("will-change"));viewerCaptionAnimation.finished.catch(()=>{}).finally(()=>caption.style.removeProperty("will-change"))}
 document.querySelector("#closeImageViewer").focus({preventScroll:true});
 }
 async function closeImageViewer(restoreFocus=true){
@@ -239,9 +245,37 @@ document.querySelector("#searchButton").addEventListener("click",runSearch);docu
 document.querySelector("#searchOverlay").addEventListener("click",event=>{if(event.target.id==="searchOverlay")closeSearch()});
 document.querySelectorAll(".hotel-image-trigger").forEach(trigger=>trigger.addEventListener("click",()=>openImageViewer(trigger)));
 document.querySelector("#closeImageViewer").addEventListener("click",()=>closeImageViewer());document.querySelector("#imageViewer").addEventListener("click",event=>{if(event.target.id==="imageViewer")closeImageViewer()});
+document.querySelector("#phrases").addEventListener("click",event=>{const button=event.target.closest(".phrase-play");if(button)playGreekPhrase(button)});
 document.addEventListener("keydown",event=>{const viewer=document.querySelector("#imageViewer"),overlay=document.querySelector("#searchOverlay");if(viewer.classList.contains("is-open")){if(event.key==="Escape")closeImageViewer();if(event.key==="Tab"){event.preventDefault();document.querySelector("#closeImageViewer").focus()}return}if(event.key==="Escape"&&overlay.classList.contains("is-open"))closeSearch();if(event.key==="Tab"&&overlay.classList.contains("is-open")){const focusable=[...overlay.querySelectorAll("button,input,[href]")].filter(item=>!item.disabled);if(!focusable.length)return;const first=focusable[0],last=focusable[focusable.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});
 
+function playGreekPhrase(button){
+const text=button.dataset.speech;
+if(!("speechSynthesis" in window)||!text){button.textContent="不可用";setTimeout(()=>button.textContent="播放",1200);return}
+speechSynthesis.cancel();
+const utterance=new SpeechSynthesisUtterance(text),voices=speechSynthesis.getVoices();
+utterance.voice=voices.find(voice=>voice.lang?.toLowerCase().startsWith("el"))||null;
+utterance.lang="el-GR";utterance.rate=.86;utterance.pitch=1.02;
+button.classList.add("is-playing");button.textContent="播放中";
+utterance.onend=utterance.onerror=()=>{button.classList.remove("is-playing");button.textContent="播放"};
+speechSynthesis.speak(utterance);
+}
+
+function setupPressFeedback(){
+if(motionPreference.matches)return;
+const selector=".tab-button,.segment-button,.button,.call-link,.search-fab,.close-search,.dock a,.phrase-play,.member-phone,.hotel-image-trigger";
+document.addEventListener("pointerdown",event=>{
+const target=event.target.closest(selector);
+if(!target||target.dataset.pressMotion==="1")return;
+target.dataset.pressMotion="1";target.style.willChange="transform";
+target.animate([{transform:getComputedStyle(target).transform==="none"?"scale(1)":getComputedStyle(target).transform},{transform:"scale(.965)"}],{duration:115,easing:"cubic-bezier(.4,0,1,1)",fill:"forwards"}).finished.catch(()=>{});
+},{passive:true});
+document.addEventListener("pointerup",event=>releasePress(event.target.closest(selector)),{passive:true});
+document.addEventListener("pointercancel",event=>releasePress(event.target.closest(selector)),{passive:true});
+function releasePress(target){if(!target||target.dataset.pressMotion!=="1")return;delete target.dataset.pressMotion;const animation=target.animate([{transform:"scale(.965)"},{transform:"scale(1.018)",offset:.62},{transform:"scale(1)"}],{duration:230,easing:easeSpring});animation.finished.catch(()=>{}).finally(()=>target.style.removeProperty("will-change"))}
+}
+
 document.querySelectorAll("details").forEach(detail=>{const summary=detail.querySelector("summary");summary?.setAttribute("aria-expanded",String(detail.open));summary?.addEventListener("click",event=>{if(motionPreference.matches)return;event.preventDefault();const state=detailStates.get(detail),currentlyOpen=state?state.targetOpen:detail.open;setDetailExpanded(detail,!currentlyOpen)})});
+setupPressFeedback();
 
 const dock=document.querySelector(".dock"),dockLinks=[...dock.querySelectorAll("a")],sections=dockLinks.map(link=>document.querySelector(link.getAttribute("href")));
 function setDockActive(link){const index=dockLinks.indexOf(link);if(index<0)return;dock.style.setProperty("--dock-index",String(index));dockLinks.forEach(item=>item.classList.toggle("is-active",item===link))}
@@ -258,15 +292,17 @@ if(location.hash){const deepTarget=document.querySelector(location.hash);deepTar
 document.body.classList.add("motion-ready");requestAnimationFrame(()=>document.body.classList.add("is-ready"));
 const topbar=document.querySelector(".topbar"),hero=document.querySelector(".hero"),heroMedia=document.querySelector(".hero-media"),progressBar=document.querySelector(".scroll-progress span");
 heroMedia.addEventListener("animationend",()=>heroMedia.classList.add("is-settled"),{once:true});setTimeout(()=>heroMedia.classList.add("is-settled"),820);
-let scrollFrame=0,heroWillChangeTimer=0,heroHeight=Math.max(1,hero.offsetHeight);
+let scrollFrame=0,heroWillChangeTimer=0,heroHeight=Math.max(1,hero.offsetHeight),lastAmbient="",lastHeroY="",lastScrolled=false,lastProgress=-1;
 function updateScrollEffects(){
 scrollFrame=0;
 const y=window.scrollY,max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
-progressBar.style.transform=`scaleX(${Math.min(1,y/max)})`;
-topbar.classList.toggle("is-scrolled",y>10);
+const progress=Math.round(Math.min(1,y/max)*1000)/1000;
+if(progress!==lastProgress){progressBar.style.transform=`scaleX(${progress})`;lastProgress=progress}
+const scrolled=y>10;if(scrolled!==lastScrolled){topbar.classList.toggle("is-scrolled",scrolled);lastScrolled=scrolled}
 const heroProgress=Math.min(1,Math.max(0,y/(heroHeight*.92))),ambientProgress=Math.min(1,Math.max(0,(heroProgress-.1)/.9));
-document.documentElement.style.setProperty("--ambient-opacity",String(ambientProgress*.145));document.documentElement.style.setProperty("--ambient-scale",String(1.055-ambientProgress*.025));hero.style.setProperty("--hero-exit",String(heroProgress));
-if(!motionPreference.matches&&heroMedia&&y<window.innerHeight*1.25){heroMedia.style.willChange="transform, opacity";hero.style.setProperty("--hero-y",`${Math.min(28,y*.055)}px`);clearTimeout(heroWillChangeTimer);heroWillChangeTimer=setTimeout(()=>heroMedia.style.removeProperty("will-change"),140)}else hero.style.setProperty("--hero-y","0px");
+if(y<heroHeight*1.35){const ambient=`${Math.round(ambientProgress*145)/1000}|${Math.round((1.055-ambientProgress*.025)*1000)/1000}|${Math.round(heroProgress*1000)/1000}`;if(ambient!==lastAmbient){document.documentElement.style.setProperty("--ambient-opacity",String(ambientProgress*.145));document.documentElement.style.setProperty("--ambient-scale",String(1.055-ambientProgress*.025));hero.style.setProperty("--hero-exit",String(heroProgress));lastAmbient=ambient}}
+else if(lastAmbient!=="off"){document.documentElement.style.setProperty("--ambient-opacity","0");hero.style.setProperty("--hero-exit","1");lastAmbient="off"}
+if(!motionPreference.matches&&heroMedia&&y<window.innerHeight*1.05){const nextY=`${Math.min(24,y*.045).toFixed(1)}px`;heroMedia.style.willChange="transform, opacity";if(nextY!==lastHeroY){hero.style.setProperty("--hero-y",nextY);lastHeroY=nextY}clearTimeout(heroWillChangeTimer);heroWillChangeTimer=setTimeout(()=>heroMedia.style.removeProperty("will-change"),120)}else if(lastHeroY!=="0px"){hero.style.setProperty("--hero-y","0px");lastHeroY="0px"}
 }
 function requestScrollEffects(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScrollEffects)}
 window.addEventListener("scroll",requestScrollEffects,{passive:true});
