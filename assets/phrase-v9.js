@@ -48,7 +48,7 @@ if(!probe.ok){playAudio(button,button.dataset.tts||src,false);return}
 }catch(error){
 if(button.dataset.tts){playAudio(button,button.dataset.tts,false);return}
 }
-playAudio(button,src,true);
+playAudio(button,src,false);
 }
 root.addEventListener("click",event=>{const button=event.target.closest(".phrase-play");if(button){event.preventDefault();event.stopImmediatePropagation();playPhrase(button)}},true);
 })();
