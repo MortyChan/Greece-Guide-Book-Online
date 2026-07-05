@@ -28,16 +28,24 @@ function renderTransport(city="athens"){
  motion($("#transportPanel"));
 }
 function linkify(h){return h.replace(/https?:\/\/[^\s，。）、)]+/g,m=>`<a href="${m}" target="_blank" rel="noopener">${m}</a>`)}
+function assetPath(p){return p?.startsWith("assets/")?p:`assets/${p||""}`}
+function researchBody(r){
+ return `<div class="role-grid">${Object.entries(r.roles).map(([k,v])=>`<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>${r.meta.length?`<div class="research-block"><h4>地点信息</h4>${r.meta.map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div>`:""}<div class="research-block"><h4>背景</h4>${(r.background.length?r.background:["手册未单列背景内容。"]).map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div><div class="research-block"><h4>问题</h4>${(r.questions.length?r.questions:["手册未单列问题内容。"]).map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div><button class="button secondary schedule-back" type="button" data-schedule-jump="${esc(r.scheduleId)}">查看当日行程</button>`;
+}
 function renderResearch(){
- set("#researchList",DATA.research.map(r=>`<article class="research-card" id="${esc(r.id)}" style="--research-image:url('${esc(r.image)}')"><button class="research-cover" type="button" data-research-toggle="${esc(r.id)}" aria-expanded="false"><span class="research-kicker">${esc(r.date)} · ${esc(r.time)}</span><strong>${esc(r.title)}</strong><em>${esc(r.topic)}</em><span class="research-meta-line">${esc(r.location)}</span><span class="research-cover-action">展开调研资料</span></button><div class="research-detail" hidden><div class="role-grid">${Object.entries(r.roles).map(([k,v])=>`<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>${r.meta.length?`<div class="research-block"><h4>地点信息</h4>${r.meta.map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div>`:""}<div class="research-block"><h4>背景</h4>${(r.background.length?r.background:["手册未单列背景内容。"]).map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div><div class="research-block"><h4>问题</h4>${(r.questions.length?r.questions:["手册未单列问题内容。"]).map(p=>`<p>${linkify(esc(p))}</p>`).join("")}</div><button class="button secondary schedule-back" type="button" data-schedule-jump="${esc(r.scheduleId)}">查看当日行程</button></div></article>`).join(""));
+ set("#researchList",DATA.research.map(r=>`<article class="research-card" id="${esc(r.id)}" style="--research-image:url('${esc(assetPath(r.imageSmall||r.image))}')"><button class="research-cover" type="button" data-research-open="${esc(r.id)}"><span class="research-kicker">${esc(r.date)} · ${esc(r.time)}</span><strong>${esc(r.title)}</strong><em>${esc(r.topic)}</em><span class="research-meta-line">${esc(r.location)}</span><span class="research-cover-action">进入调研资料</span></button></article>`).join(""));
 }
-function toggleResearch(id,force){
- const c=document.getElementById(id);if(!c)return;
- const d=$(".research-detail",c),b=$("[data-research-toggle]",c),open=force??d.hidden;
- d.hidden=!open;b?.setAttribute("aria-expanded",open?"true":"false");c.classList.toggle("is-open",open);motion(d);
- if(open)setTimeout(()=>c.scrollIntoView({behavior:reduced.matches?"auto":"smooth",block:"center"}),40);
+function openResearch(id){
+ const r=DATA.research.find(x=>x.id===id),view=$("#researchView");if(!r||!view)return;
+ $("#researchViewTitle").textContent=r.title;$("#researchViewKicker").textContent=`${r.date} · ${r.time}`;$("#researchViewTopic").textContent=r.topic;$("#researchViewLocation").textContent=r.location;
+ const img=assetPath(r.image);$("#researchViewHero").style.backgroundImage=`linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.7) 44%,rgba(255,255,255,.2)),url('${img}')`;$("#researchViewBg").style.backgroundImage=`url('${img}')`;
+ set("#researchViewBody",researchBody(r));view.classList.add("is-open");view.setAttribute("aria-hidden","false");document.body.classList.add("research-view-open");$("#closeResearchView")?.focus({preventScroll:true});
 }
-function jumpResearch(id){toggleResearch(id,true);const c=document.getElementById(id);c?.classList.add("target-flash");setTimeout(()=>c?.classList.remove("target-flash"),900)}
+function closeResearchView(scrollBack=true){
+ const view=$("#researchView");if(!view)return;view.classList.remove("is-open");view.setAttribute("aria-hidden","true");document.body.classList.remove("research-view-open");
+ if(scrollBack)document.getElementById("research")?.scrollIntoView({behavior:reduced.matches?"auto":"smooth",block:"start"});
+}
+function jumpResearch(id){const c=document.getElementById(id);c?.scrollIntoView({behavior:reduced.matches?"auto":"smooth",block:"center"});c?.classList.add("target-flash");setTimeout(()=>{c?.classList.remove("target-flash");openResearch(id)},260)}
 function jumpSchedule(id){
  const idx=DATA.days.findIndex(d=>d.events.some(e=>e.id===id));
  if(idx>=0)renderDay(idx);
@@ -127,11 +135,14 @@ function init(){
 }
 init();
 $("#dayTabs")?.addEventListener("click",e=>{const b=e.target.closest(".tab-button");if(b)renderDay(Number(b.dataset.index))});
-document.addEventListener("click",e=>{const r=e.target.closest("[data-research-jump]");if(r)jumpResearch(r.dataset.researchJump);const s=e.target.closest("[data-schedule-jump]");if(s)jumpSchedule(s.dataset.scheduleJump);const t=e.target.closest("[data-research-toggle]");if(t)toggleResearch(t.dataset.researchToggle);const p=e.target.closest(".phrase-play");if(p)play(p);const image=e.target.closest(".weather-image-trigger,.hotel-image-trigger");if(image)openImageViewer(image)});
+document.addEventListener("click",e=>{const r=e.target.closest("[data-research-jump]");if(r)jumpResearch(r.dataset.researchJump);const o=e.target.closest("[data-research-open]");if(o)openResearch(o.dataset.researchOpen);const s=e.target.closest("[data-schedule-jump]");if(s){closeResearchView(false);jumpSchedule(s.dataset.scheduleJump)}const p=e.target.closest(".phrase-play");if(p)play(p);const image=e.target.closest(".weather-image-trigger,.hotel-image-trigger");if(image)openImageViewer(image)});
 $$(".segment-button").forEach(b=>b.addEventListener("click",()=>renderTransport(b.dataset.city)));
 $("#unlockEmergency")?.addEventListener("click",unlock);$("#lockEmergency")?.addEventListener("click",lock);$("#emergencyPassword")?.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
 $("#openSearch")?.addEventListener("click",openSearch);$("#closeSearch")?.addEventListener("click",()=>closeSearch());$("#searchButton")?.addEventListener("click",runSearch);$("#searchInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")runSearch()});$("#searchOverlay")?.addEventListener("click",e=>{if(e.target.id==="searchOverlay")closeSearch()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#searchOverlay")?.classList.contains("is-open"))closeSearch()});
+$("#closeResearchView")?.addEventListener("click",()=>closeResearchView());
+$("#researchView")?.addEventListener("click",e=>{if(e.target.id==="researchView")closeResearchView()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#researchView")?.classList.contains("is-open"))closeResearchView()});
 $("#closeImageViewer")?.addEventListener("click",closeImageViewer);$("#imageViewer")?.addEventListener("click",e=>{if(e.target.id==="imageViewer")closeImageViewer()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#imageViewer")?.classList.contains("is-open"))closeImageViewer()});
 })();
