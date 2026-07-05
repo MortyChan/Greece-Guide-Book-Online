@@ -25,5 +25,9 @@
 .phrase-card{min-height:154px;padding:16px;border-radius:24px}
 .phrase-card strong{font-size:15px}.phrase-card span{font-size:12px;line-height:1.45}.phrase-play{min-height:32px;padding:0 11px;font-size:11px}
 }
-@media(max-width:380px){.hero{min-height:416px}.hero-glass-plane{height:306px}.hero-inner{width:calc(100% - 36px);padding-bottom:24px}.hero h1{font-size:34px}}
-@media(prefers-reduced-motion:reduce){.hero-media,.hero::after{animation:none!important}.hero-media{transform:scale(1.035)!important}}
+@media(max-width:380px){
+.hero{min-height:416px}.hero-glass-plane{height:306px}.hero-inner{width:calc(100% - 36px);padding-bottom:24px}.hero h1{font-size:34px}
+}
+@media(prefers-reduced-motion:reduce){
+.hero-media,.hero::after{animation:none!important}.hero-media{transform:scale(1.035)!important}
+}
