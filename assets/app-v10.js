@@ -9,12 +9,25 @@ const set=(s,h)=>{const e=$(s);if(e)e.innerHTML=h};
 const speech=v=>String(v).replace(/\s*\([^)]*\)\s*/g," ").trim();
 const tag=(t,k="blue")=>`<span class="tag ${k}">${esc(t)}</span>`;
 const phraseAudioFiles=["hello","goodbye","thanks","sorry","student-from-china","help","lost","toilet","can-you-help","embassy","english"];
+const imagePreloadCache=new Map();
+let imageLoadToken=0;
+function preloadImage(src){
+ if(!src)return Promise.reject(new Error("missing image"));
+ if(imagePreloadCache.has(src))return imagePreloadCache.get(src);
+ const p=new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(src);im.onerror=reject;im.src=src});
+ imagePreloadCache.set(src,p);return p;
+}
+function preloadEventMaps(events=[]){
+ const run=()=>events.slice(0,4).forEach(e=>{if(e.mapImage)preloadImage(e.mapImage).catch(()=>{})});
+ if("requestIdleCallback"in window)requestIdleCallback(run,{timeout:1800});else setTimeout(run,180);
+}
 function motion(e){if(e&&!reduced.matches)e.animate([{opacity:.45,transform:"translateY(10px) scale(.995)"},{opacity:1,transform:"translateY(0) scale(1)"}],{duration:280,easing:"cubic-bezier(.16,1,.3,1)"})}
 function renderDay(i=0){
  const d=DATA.days[i];
  $$("#dayTabs .tab-button").forEach((b,n)=>{b.classList.toggle("is-active",n===i);b.setAttribute("aria-selected",n===i?"true":"false")});
  set("#dayCard",`<div class="date">${esc(d.date)}</div><div class="city">${esc(d.city)}</div><p><strong>导游 / 负责：</strong>${esc(d.guide)}</p><p><strong>状态：</strong>${esc(d.status)}</p><div class="tags">${d.tags.map((t,n)=>tag(t,n%2?"blue":"gold")).join("")}</div>`);
  set("#timeline",d.events.map(e=>`<article class="event" id="${esc(e.id)}"><div class="event-time">${esc(e.time)}</div><div class="event-place"><strong>${esc(e.place)}</strong>${e.address&&e.mapImage?`<button class="event-address-trigger event-map-trigger" type="button" aria-label="放大查看${esc(e.place)}地图地址截图" data-title="地图：${esc(e.place)}" data-address="${esc(e.address||e.mapQuery||"")}" data-image="${esc(e.mapImage)}"><span class="event-address">${esc(e.address)}</span></button>`:e.address?`<span class="event-address">${esc(e.address)}</span>`:""}</div><p>${esc(e.desc)}<span class="event-note">${esc(e.note||"")}</span>${e.researchId?`<button class="jump-pill" type="button" data-research-jump="${esc(e.researchId)}">查看调研</button>`:""}</p></article>`).join(""));
+ preloadEventMaps(d.events);
  motion($(".schedule-layout"));
 }
 function checks(id,items,prefix){
@@ -102,20 +115,25 @@ function play(btn){
  audio.addEventListener("error",()=>speakFallback(btn),{once:true});
  audio.play().catch(()=>speakFallback(btn));
 }
-function openImageViewer(trigger){
+async function openImageViewer(trigger){
  const overlay=$("#imageViewer"),img=$("#imageViewerImage"),title=$("#imageViewerTitle"),address=$("#imageViewerAddress");
  const source=trigger.querySelector("img"),caption=trigger.closest("figure, .hotel")?.querySelector("figcaption, h3");
  const src=trigger.dataset.image||source?.currentSrc||source?.src;
  if(!overlay||!img||!src)return;
- img.src=src;img.alt=trigger.dataset.title||source?.alt||"地图截图";
+ const token=++imageLoadToken;
  title.textContent=trigger.dataset.title||caption?.querySelector?.("strong")?.textContent||caption?.textContent?.trim()||source?.alt||"图片";
  address.textContent=trigger.dataset.address||caption?.textContent?.replace(title.textContent,"").trim()||"";
- overlay.classList.add("is-open");overlay.setAttribute("aria-hidden","false");document.body.classList.add("image-viewer-open");
+ overlay.classList.add("is-open","is-loading");overlay.setAttribute("aria-hidden","false");document.body.classList.add("image-viewer-open");
+ img.removeAttribute("src");img.alt=title.textContent;
  $("#closeImageViewer")?.focus({preventScroll:true});
+ try{await preloadImage(src);if(token!==imageLoadToken)return;img.src=src;overlay.classList.remove("is-loading")}
+ catch{if(token!==imageLoadToken)return;overlay.classList.remove("is-loading");img.alt="地图截图加载失败"}
 }
 function closeImageViewer(){
- const overlay=$("#imageViewer");if(!overlay)return;
- overlay.classList.remove("is-open","is-closing");overlay.setAttribute("aria-hidden","true");document.body.classList.remove("image-viewer-open");
+ const overlay=$("#imageViewer"),img=$("#imageViewerImage");if(!overlay)return;
+ imageLoadToken++;
+ overlay.classList.remove("is-open","is-closing","is-loading");overlay.setAttribute("aria-hidden","true");document.body.classList.remove("image-viewer-open");
+ if(img)img.removeAttribute("src");
 }
 function observers(){
  document.body.classList.add("motion-ready");requestAnimationFrame(()=>document.body.classList.add("is-ready"));
@@ -136,7 +154,7 @@ function init(){
 }
 init();
 $("#dayTabs")?.addEventListener("click",e=>{const b=e.target.closest(".tab-button");if(b)renderDay(Number(b.dataset.index))});
-document.addEventListener("click",e=>{const r=e.target.closest("[data-research-jump]");if(r)jumpResearch(r.dataset.researchJump);const o=e.target.closest("[data-research-open]");if(o)openResearch(o.dataset.researchOpen);const s=e.target.closest("[data-schedule-jump]");if(s){closeResearchView(false);jumpSchedule(s.dataset.scheduleJump)}const p=e.target.closest(".phrase-play");if(p)play(p);const image=e.target.closest(".weather-image-trigger,.hotel-image-trigger,.event-map-trigger");if(image)openImageViewer(image)});
+document.addEventListener("click",e=>{const r=e.target.closest("[data-research-jump]");if(r)jumpResearch(r.dataset.researchJump);const o=e.target.closest("[data-research-open]");if(o)openResearch(o.dataset.researchOpen);const s=e.target.closest("[data-schedule-jump]");if(s){closeResearchView(false);jumpSchedule(s.dataset.scheduleJump)}const p=e.target.closest(".phrase-play");if(p)play(p);const image=e.target.closest(".weather-image-trigger,.hotel-image-trigger,.event-map-trigger");if(image)openImageViewer(image)});document.addEventListener("pointerover",e=>{const image=e.target.closest(".event-map-trigger");if(image?.dataset.image)preloadImage(image.dataset.image).catch(()=>{})});document.addEventListener("focusin",e=>{const image=e.target.closest(".event-map-trigger");if(image?.dataset.image)preloadImage(image.dataset.image).catch(()=>{})});
 $$(".segment-button").forEach(b=>b.addEventListener("click",()=>renderTransport(b.dataset.city)));
 $("#unlockEmergency")?.addEventListener("click",unlock);$("#lockEmergency")?.addEventListener("click",lock);$("#emergencyPassword")?.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
 $("#openSearch")?.addEventListener("click",openSearch);$("#closeSearch")?.addEventListener("click",()=>closeSearch());$("#searchButton")?.addEventListener("click",runSearch);$("#searchInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")runSearch()});$("#searchOverlay")?.addEventListener("click",e=>{if(e.target.id==="searchOverlay")closeSearch()});

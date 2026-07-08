@@ -259,8 +259,8 @@ details[open] summary::after{transform:rotate(180deg)}
 .image-viewer.is-closing{opacity:0;transition-duration:180ms}
 .image-viewer-dialog{position:relative;width:min(1040px,100%)}
 .image-viewer-figure{margin:0;overflow:hidden;border:1px solid rgba(255,255,255,.78);border-radius:32px;background:rgba(255,255,255,.86);box-shadow:0 36px 110px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.92)}
-.image-viewer-photo{aspect-ratio:1.9/1;overflow:hidden;background:#e9e9eb;transform-origin:center center}
-.image-viewer-photo img{width:100%;height:100%;object-fit:cover}
+.image-viewer-photo{position:relative;aspect-ratio:1.9/1;overflow:hidden;background:#e9e9eb;transform-origin:center center}.image-viewer-photo::before{content:"正在加载地图截图...";position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:15px;font-weight:700;background:linear-gradient(120deg,#eceef2,#f7f8fa,#eceef2);background-size:220% 100%;opacity:0;transition:opacity .18s ease-out;animation:imageLoading 1.2s linear infinite}.image-viewer.is-loading .image-viewer-photo::before{opacity:1}.image-viewer.is-loading .image-viewer-photo img{opacity:0}@keyframes imageLoading{to{background-position:-220% 0}}
+.image-viewer-photo img{width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity .18s ease-out}
 .image-viewer-figure figcaption{display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:20px 24px 22px}
 .image-viewer-figure figcaption strong{font-size:20px}.image-viewer-figure figcaption span{color:var(--muted);font-size:14px;text-align:right}
 .image-viewer-close{position:absolute;right:14px;top:14px;z-index:2;width:44px;height:44px;border:1px solid rgba(255,255,255,.78);border-radius:50%;color:#1d1d1f;background:rgba(255,255,255,.78);box-shadow:0 8px 26px rgba(0,0,0,.16);backdrop-filter:saturate(150%) blur(16px);-webkit-backdrop-filter:saturate(150%) blur(16px);cursor:pointer;font-size:28px;line-height:1;transition:transform var(--motion-base) var(--ease-enter),background-color var(--motion-fast) ease-out}
