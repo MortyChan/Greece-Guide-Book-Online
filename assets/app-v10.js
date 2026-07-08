@@ -14,7 +14,7 @@ function renderDay(i=0){
  const d=DATA.days[i];
  $$("#dayTabs .tab-button").forEach((b,n)=>{b.classList.toggle("is-active",n===i);b.setAttribute("aria-selected",n===i?"true":"false")});
  set("#dayCard",`<div class="date">${esc(d.date)}</div><div class="city">${esc(d.city)}</div><p><strong>导游 / 负责：</strong>${esc(d.guide)}</p><p><strong>状态：</strong>${esc(d.status)}</p><div class="tags">${d.tags.map((t,n)=>tag(t,n%2?"blue":"gold")).join("")}</div>`);
- set("#timeline",d.events.map(e=>`<article class="event" id="${esc(e.id)}"><div class="event-time">${esc(e.time)}</div><div class="event-place"><strong>${esc(e.place)}</strong>${e.address&&e.mapImage?`<button class="event-address-trigger event-map-trigger" type="button" aria-label="放大查看${esc(e.place)}地图地址截图" data-title="地图：${esc(e.place)}" data-address="${esc(e.address||e.mapQuery||"")}"><span class="event-address">${esc(e.address)}</span><img class="event-map-source" src="${esc(e.mapImage)}" alt="${esc(e.place)}地图地址截图" loading="lazy" aria-hidden="true"></button>`:e.address?`<span class="event-address">${esc(e.address)}</span>`:""}</div><p>${esc(e.desc)}<span class="event-note">${esc(e.note||"")}</span>${e.researchId?`<button class="jump-pill" type="button" data-research-jump="${esc(e.researchId)}">查看调研</button>`:""}</p></article>`).join(""));
+ set("#timeline",d.events.map(e=>`<article class="event" id="${esc(e.id)}"><div class="event-time">${esc(e.time)}</div><div class="event-place"><strong>${esc(e.place)}</strong>${e.address&&e.mapImage?`<button class="event-address-trigger event-map-trigger" type="button" aria-label="放大查看${esc(e.place)}地图地址截图" data-title="地图：${esc(e.place)}" data-address="${esc(e.address||e.mapQuery||"")}" data-image="${esc(e.mapImage)}"><span class="event-address">${esc(e.address)}</span></button>`:e.address?`<span class="event-address">${esc(e.address)}</span>`:""}</div><p>${esc(e.desc)}<span class="event-note">${esc(e.note||"")}</span>${e.researchId?`<button class="jump-pill" type="button" data-research-jump="${esc(e.researchId)}">查看调研</button>`:""}</p></article>`).join(""));
  motion($(".schedule-layout"));
 }
 function checks(id,items,prefix){
@@ -105,9 +105,10 @@ function play(btn){
 function openImageViewer(trigger){
  const overlay=$("#imageViewer"),img=$("#imageViewerImage"),title=$("#imageViewerTitle"),address=$("#imageViewerAddress");
  const source=trigger.querySelector("img"),caption=trigger.closest("figure, .hotel")?.querySelector("figcaption, h3");
- if(!overlay||!img||!source)return;
- img.src=source.currentSrc||source.src;img.alt=source.alt||"";
- title.textContent=trigger.dataset.title||caption?.querySelector?.("strong")?.textContent||caption?.textContent?.trim()||source.alt||"图片";
+ const src=trigger.dataset.image||source?.currentSrc||source?.src;
+ if(!overlay||!img||!src)return;
+ img.src=src;img.alt=trigger.dataset.title||source?.alt||"地图截图";
+ title.textContent=trigger.dataset.title||caption?.querySelector?.("strong")?.textContent||caption?.textContent?.trim()||source?.alt||"图片";
  address.textContent=trigger.dataset.address||caption?.textContent?.replace(title.textContent,"").trim()||"";
  overlay.classList.add("is-open");overlay.setAttribute("aria-hidden","false");document.body.classList.add("image-viewer-open");
  $("#closeImageViewer")?.focus({preventScroll:true});
